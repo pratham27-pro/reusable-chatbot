@@ -1,13 +1,29 @@
 {
-  "name": "ui",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@pratham/chatbot",
+  "version": "0.1.0",
+  "description": "Reusable floating chatbot widget with RAG support",
   "type": "module",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepublishOnly": "npm run lint && npm run build",
+    "release:patch": "npm version patch && npm publish --access public",
+    "release:minor": "npm version minor && npm publish --access public",
+    "release:major": "npm version major && npm publish --access public"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",
