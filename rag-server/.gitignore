@@ -1,0 +1,77 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Flask instance folder
+instance/
+
+# Environment variables
+.env
+*.env
+
+# pip environment
+venv/
+env/
+ENV/
+.venv/
+
+# macOS
+.DS_Store
+
+# VS Code settings
+.vscode/
+
+# PyCharm
+.idea/
+
+# SQLite database
+*.sqlite3
+*.db
+
+# Logs and cache
+*.log
+*.pot
+*.pyc
+.cache/
+coverage/
+
+# Test outputs
+htmlcov/
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# mypy
+.mypy_cache/
+
+# pytest
+.pytest_cache/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Static/Media (if dynamically generated or uploaded)
+static/uploads/
+media/
+
+# Gunicorn / uWSGI
+*.pid
+
+# Docker
+*.pid
+docker-compose.override.yml
+
+tfhub_cache/
+uploads/
+models/
