@@ -11,52 +11,45 @@ interface Props {
 
 export function ChatMessage({ message, botAvatar, botName, theme }: Props) {
   const isBot = message.role === "bot";
+  const dark = theme === "dark";
 
   return (
-    <div
-      className={cn(
-        "crb-flex crb-gap-2 crb-animate-fade-in",
-        isBot ? "crb-flex-row" : "crb-flex-row-reverse",
-      )}
-    >
-      {/* Avatar */}
+    <div className={cn("flex gap-2", isBot ? "flex-row" : "flex-row-reverse")}>
       {isBot && (
-        <div className="crb-w-7 crb-h-7 crb-rounded-full crb-overflow-hidden crb-shrink-0 crb-bg-indigo-100 crb-flex crb-items-center crb-justify-center crb-mt-1">
+        <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 bg-indigo-100 flex items-center justify-center mt-1">
           {botAvatar ? (
             <img
               src={botAvatar}
               alt={botName}
-              className="crb-w-full crb-h-full crb-object-cover"
+              className="w-full h-full object-cover"
             />
           ) : (
-            <Bot size={14} className="crb-text-indigo-500" />
+            <Bot size={14} className="text-indigo-500" />
           )}
         </div>
       )}
-
-      {/* Bubble */}
       <div
         className={cn(
-          "crb-max-w-[75%] crb-px-3 crb-py-2 crb-rounded-2xl crb-text-sm crb-leading-relaxed",
+          "max-w-[75%] px-3 py-2 rounded-2xl text-sm leading-relaxed",
           isBot
-            ? theme === "dark"
-              ? "crb-bg-gray-700 crb-text-gray-100 crb-rounded-tl-sm"
-              : "crb-bg-gray-100 crb-text-gray-800 crb-rounded-tl-sm"
-            : "crb-bg-indigo-500 crb-text-white crb-rounded-tr-sm",
+            ? dark
+              ? "bg-gray-700 text-gray-100 rounded-tl-sm"
+              : "bg-gray-100 text-gray-800 rounded-tl-sm"
+            : "bg-indigo-500 text-white rounded-tr-sm",
         )}
       >
-        <p className="crb-whitespace-pre-wrap crb-break-words">
+        <p className="whitespace-pre-wrap wrap-break-words">
           {message.content}
         </p>
         <span
           className={cn(
-            "crb-text-[10px] crb-mt-1 crb-block",
+            "text-[10px] mt-1 block",
+            isBot ? "text-left" : "text-right",
             isBot
-              ? theme === "dark"
-                ? "crb-text-gray-400"
-                : "crb-text-gray-400"
-              : "crb-text-indigo-200",
-            isBot ? "crb-text-left" : "crb-text-right",
+              ? dark
+                ? "text-gray-400"
+                : "text-gray-400"
+              : "text-indigo-200",
           )}
         >
           {message.timestamp.toLocaleTimeString([], {

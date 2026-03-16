@@ -11,6 +11,7 @@ export function DocUploader({ apiEndpoint, theme }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const dark = theme === "dark";
 
   const handleUpload = async () => {
     if (!file) return;
@@ -36,58 +37,54 @@ export function DocUploader({ apiEndpoint, theme }: Props) {
   return (
     <div
       className={cn(
-        "crb-px-3 crb-py-2 crb-border-t crb-flex crb-items-center crb-gap-2 crb-text-xs",
-        theme === "dark"
-          ? "crb-border-gray-700 crb-bg-gray-800"
-          : "crb-border-gray-200 crb-bg-gray-50",
+        "px-3 py-2 border-t flex items-center gap-2 text-xs",
+        dark ? "border-gray-700 bg-gray-800" : "border-gray-200 bg-gray-50",
       )}
     >
-      <label className="crb-cursor-pointer crb-flex crb-items-center crb-gap-1 crb-text-indigo-500 hover:crb-text-indigo-700 crb-transition-colors">
+      <label className="cursor-pointer flex items-center gap-1 text-indigo-500 hover:text-indigo-700 transition-colors">
         <Paperclip size={14} />
         <span>Attach PDF/DOCX</span>
         <input
           type="file"
           accept=".pdf,.docx"
-          className="crb-hidden"
+          className="hidden"
           onChange={(e) => {
             setFile(e.target.files?.[0] || null);
             setStatus("idle");
           }}
         />
       </label>
-
       {file && (
         <>
           <span
             className={cn(
-              "crb-truncate crb-max-w-[100px]",
-              theme === "dark" ? "crb-text-gray-300" : "crb-text-gray-600",
+              "truncate max-w-25",
+              dark ? "text-gray-300" : "text-gray-600",
             )}
           >
             {file.name}
           </span>
           <button
             onClick={() => setFile(null)}
-            className="crb-text-gray-400 hover:crb-text-gray-600"
+            className="text-gray-400 hover:text-gray-600 border-0 bg-transparent cursor-pointer"
           >
             <X size={12} />
           </button>
           <button
             onClick={handleUpload}
             disabled={uploading}
-            className="crb-ml-auto crb-flex crb-items-center crb-gap-1 crb-bg-indigo-500 crb-text-white crb-px-2 crb-py-1 crb-rounded-md hover:crb-bg-indigo-600 crb-transition-colors disabled:crb-opacity-50"
+            className="ml-auto flex items-center gap-1 bg-indigo-500 text-white px-2 py-1 rounded-md hover:bg-indigo-600 transition-colors disabled:opacity-50 border-0 cursor-pointer text-xs"
           >
             <UploadCloud size={12} />
             {uploading ? "Uploading..." : "Upload"}
           </button>
         </>
       )}
-
       {status === "success" && (
-        <span className="crb-ml-auto crb-text-green-500">✓ Uploaded!</span>
+        <span className="ml-auto text-green-500">✓ Uploaded!</span>
       )}
       {status === "error" && (
-        <span className="crb-ml-auto crb-text-red-500">✗ Failed</span>
+        <span className="ml-auto text-red-500">✗ Failed</span>
       )}
     </div>
   );

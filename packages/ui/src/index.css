@@ -1,1 +1,20 @@
 @import "tailwindcss";
+
+/*
+  All chatbot styles are scoped under .chatbot-rag-root
+  This prevents any conflict with the consumer app's styles
+*/
+.chatbot-rag-root {
+  all: initial;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color-scheme: light dark;
+  box-sizing: border-box;
+}
+
+.chatbot-rag-root *,
+.chatbot-rag-root *::before,
+.chatbot-rag-root *::after {
+  box-sizing: border-box;
+}

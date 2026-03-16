@@ -1,35 +1,42 @@
 import { useEffect, useRef } from "react";
 import { useChat } from "../hooks/useChat";
 import { cn } from "../lib/cn";
-import type { ChatBotProps } from "../types";
 import { ChatHeader } from "./ChatHeader";
 import { ChatInput } from "./ChatInput";
 import { ChatMessage } from "./ChatMessage";
 import { DocUploader } from "./DocUploader";
 
-interface Props extends ChatBotProps {
+interface ChatWindowProps {
+  apiEndpoint: string;
+  botName: string;
+  botAvatar?: string;
+  buttonColor: string;
+  theme: "light" | "dark";
+  welcomeMessage: string;
+  placeholder: string;
+  systemPrompt: string;
+  knowledgeBaseEnabled: boolean;
   onClose: () => void;
 }
 
 export function ChatWindow({
   apiEndpoint,
-  botName = "Assistant",
+  botName,
   botAvatar,
   buttonColor,
-  systemPrompt,
+  theme,
   welcomeMessage,
   placeholder,
-  theme = "light",
-  knowledgeBaseEnabled = false,
-  width = 360,
-  height = 500,
+  systemPrompt,
+  knowledgeBaseEnabled,
   onClose,
-}: Props) {
+}: ChatWindowProps) {
   const { messages, isLoading, sendMessage } = useChat(
     apiEndpoint,
     systemPrompt,
   );
   const bottomRef = useRef<HTMLDivElement>(null);
+  const dark = theme === "dark";
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -38,29 +45,25 @@ export function ChatWindow({
   return (
     <div
       className={cn(
-        "crb-rounded-2xl crb-shadow-2xl crb-flex crb-flex-col crb-overflow-hidden crb-animate-fade-in",
-        theme === "dark"
-          ? "crb-bg-gray-800 crb-text-gray-100"
-          : "crb-bg-white crb-text-gray-900",
+        "w-90 h-125 rounded-2xl shadow-2xl flex flex-col overflow-hidden mb-2",
+        dark ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900",
       )}
-      style={{ width, height }}
     >
       <ChatHeader
         botName={botName}
         botAvatar={botAvatar}
-        onClose={onClose}
         buttonColor={buttonColor}
+        onClose={onClose}
       />
 
-      {/* Messages area */}
-      <div className="crb-flex-1 crb-overflow-y-auto crb-px-4 crb-py-3 crb-flex crb-flex-col crb-gap-3 crb-scroll-smooth">
-        {welcomeMessage && messages.length === 0 && (
+      <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-3">
+        {messages.length === 0 && (
           <div
             className={cn(
-              "crb-text-center crb-text-xs crb-py-3 crb-px-4 crb-rounded-xl crb-mx-auto crb-max-w-[80%]",
-              theme === "dark"
-                ? "crb-bg-gray-700 crb-text-gray-300"
-                : "crb-bg-indigo-50 crb-text-indigo-600",
+              "text-center text-xs py-3 px-4 rounded-xl mx-auto max-w-[80%]",
+              dark
+                ? "bg-gray-700 text-gray-300"
+                : "bg-indigo-50 text-indigo-600",
             )}
           >
             {welcomeMessage}
@@ -77,14 +80,21 @@ export function ChatWindow({
           />
         ))}
 
-        {/* Typing indicator */}
         {isLoading && (
-          <div className="crb-flex crb-gap-1 crb-px-3 crb-py-2 crb-bg-gray-100 crb-rounded-2xl crb-rounded-tl-sm crb-w-fit">
-            {[0, 0.2, 0.4].map((delay, i) => (
+          <div
+            className={cn(
+              "flex gap-1 px-3 py-2.5 rounded-2xl rounded-tl-sm w-fit",
+              dark ? "bg-gray-700" : "bg-gray-100",
+            )}
+          >
+            {[0, 0.15, 0.3].map((delay, i) => (
               <span
                 key={i}
-                className="crb-w-2 crb-h-2 crb-rounded-full crb-bg-gray-400 crb-animate-dot-bounce crb-inline-block"
                 style={{ animationDelay: `${delay}s` }}
+                className={cn(
+                  "w-2 h-2 rounded-full inline-block animate-bounce",
+                  dark ? "bg-gray-400" : "bg-gray-400",
+                )}
               />
             ))}
           </div>

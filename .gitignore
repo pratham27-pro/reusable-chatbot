@@ -75,3 +75,6 @@ docker-compose.override.yml
 tfhub_cache/
 uploads/
 models/
+
+
+chatbot-test/

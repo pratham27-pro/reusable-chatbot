@@ -69,7 +69,7 @@ export function useChat(apiEndpoint: string, systemPrompt?: string) {
           const data = await res.json();
           setMessages((prev) =>
             prev.map((m) =>
-              m.id === botMsgId ? { ...m, content: data.response } : m,
+              m.id === botMsgId ? { ...m, content: (data as { response: string }).response } : m,
             ),
           );
         }
