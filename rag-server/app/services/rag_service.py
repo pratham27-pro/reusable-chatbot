@@ -5,13 +5,21 @@ from app.services.embeddings import embeddings
 from app.core.config import settings
 import tempfile, os
 
-def get_vectorstore():
+def get_vectorstore(collection_id: str = "default"):
+    if settings.chroma_in_memory:
+        # No persistence — resets on server restart (good for testing)
+        return Chroma(
+            collection_name=collection_id,
+            embedding_function=embeddings
+        )
+    # Persistent — survives server restarts (good for production)
     return Chroma(
+        collection_name=collection_id,
         persist_directory=settings.chroma_persist_dir,
         embedding_function=embeddings
     )
 
-def ingest_document(file_bytes: bytes, filename: str) -> int:
+def ingest_document(file_bytes: bytes, filename: str, collection_id: str = "default") -> int:
     suffix = ".pdf" if filename.endswith(".pdf") else ".docx"
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
         tmp.write(file_bytes)
@@ -25,12 +33,11 @@ def ingest_document(file_bytes: bytes, filename: str) -> int:
 
     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     chunks = splitter.split_documents(docs)
-
-    vectorstore = get_vectorstore()
+    vectorstore = get_vectorstore(collection_id)
     vectorstore.add_documents(chunks)
     return len(chunks)
 
-def retrieve_context(query: str, k: int = 4) -> str:
-    vectorstore = get_vectorstore()
+def retrieve_context(query: str, collection_id: str = "default", k: int = 4) -> str:
+    vectorstore = get_vectorstore(collection_id)
     docs = vectorstore.similarity_search(query, k=k)
     return "\n\n".join([d.page_content for d in docs])
