@@ -11,6 +11,7 @@ export interface ChatBotProps {
   placeholder?: string;
   width?: number;
   height?: number;
+  enableVoice?: boolean;
 }
 
 export interface Message {
