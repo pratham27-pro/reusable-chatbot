@@ -38,7 +38,7 @@ export function Navbar() {
           href="/"
           className="flex items-center gap-2 font-bold text-white text-lg"
         >
-          <span className="text-indigo-400">@pratham/</span>chatbot
+          <span className="text-indigo-400">Chatter</span>bot
         </Link>
 
         <div className="hidden md:flex items-center gap-1">
