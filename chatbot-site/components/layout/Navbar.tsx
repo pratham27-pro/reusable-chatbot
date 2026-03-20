@@ -1,9 +1,9 @@
 "use client";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// GitHub SVG icon
 function GithubIcon({ size = 20 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -12,7 +12,6 @@ function GithubIcon({ size = 20 }: { size?: number }) {
   );
 }
 
-// npm SVG icon
 function NpmIcon({ size = 20 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -32,13 +31,29 @@ export function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-gray-950/80 backdrop-blur-md">
+    <motion.nav
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="fixed top-0 left-0 right-0 z-50"
+      style={{
+        background: "rgba(7, 11, 20, 0.7)",
+        backdropFilter: "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+      }}
+    >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link
-          href="/"
-          className="flex items-center gap-2 font-bold text-white text-lg"
-        >
-          <span className="text-indigo-400">Chatter</span>bot
+        <Link href="/" className="flex items-center gap-2.5 font-bold text-lg">
+          <div
+            className="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black"
+            style={{ background: "linear-gradient(135deg, #00e5a0, #00b37d)", color: "#070b14" }}
+          >
+            C
+          </div>
+          <span style={{ color: "#f0f4ff" }}>
+            chat<span style={{ color: "#00e5a0" }}>bot</span>
+          </span>
         </Link>
 
         <div className="hidden md:flex items-center gap-1">
@@ -47,11 +62,15 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               className={cn(
-                "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                "px-4 py-2 rounded-lg text-sm font-medium transition-all",
                 pathname === link.href
-                  ? "bg-white/10 text-white"
-                  : "text-gray-400 hover:text-white hover:bg-white/5",
+                  ? "text-white"
+                  : "hover:text-white",
               )}
+              style={{
+                color: pathname === link.href ? "#f0f4ff" : "#7a8aaa",
+                background: pathname === link.href ? "rgba(255,255,255,0.08)" : "transparent",
+              }}
             >
               {link.label}
             </Link>
@@ -62,21 +81,39 @@ export function Navbar() {
           <Link
             href="https://www.npmjs.com/package/@pratham/chatbot"
             target="_blank"
-            className="text-gray-400 hover:text-red-400 transition-colors"
+            className="transition-colors"
             title="View on npm"
+            style={{ color: "#7a8aaa" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#ef4444")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#7a8aaa")}
           >
             <NpmIcon size={22} />
           </Link>
           <Link
             href="https://github.com/pratham/chatbot"
             target="_blank"
-            className="text-gray-400 hover:text-white transition-colors"
+            className="transition-colors"
             title="View on GitHub"
+            style={{ color: "#7a8aaa" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#f0f4ff")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#7a8aaa")}
           >
             <GithubIcon size={20} />
           </Link>
+
+          <Link
+            href="/docs"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all hover:scale-105"
+            style={{
+              background: "rgba(0,229,160,0.1)",
+              color: "#00e5a0",
+              border: "1px solid rgba(0,229,160,0.2)",
+            }}
+          >
+            Get Started →
+          </Link>
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
 }
