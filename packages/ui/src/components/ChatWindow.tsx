@@ -17,6 +17,7 @@ interface ChatWindowProps {
   systemPrompt: string;
   knowledgeBaseEnabled: boolean;
   onClose: () => void;
+  persistHistory?: boolean;
 }
 
 export function ChatWindow({
@@ -30,10 +31,12 @@ export function ChatWindow({
   systemPrompt,
   knowledgeBaseEnabled,
   onClose,
+  persistHistory = true,
 }: ChatWindowProps) {
-  const { messages, isLoading, sendMessage } = useChat(
+  const { messages, isLoading, sendMessage, clearMessages } = useChat(
     apiEndpoint,
     systemPrompt,
+    persistHistory,
   );
   const bottomRef = useRef<HTMLDivElement>(null);
   const dark = theme === "dark";
@@ -54,6 +57,7 @@ export function ChatWindow({
         botAvatar={botAvatar}
         buttonColor={buttonColor}
         onClose={onClose}
+        onClear={clearMessages}
       />
 
       <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-3">

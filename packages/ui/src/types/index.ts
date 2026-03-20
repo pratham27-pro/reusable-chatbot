@@ -12,6 +12,7 @@ export interface ChatBotProps {
   width?: number;
   height?: number;
   enableVoice?: boolean;
+  persistHistory?: boolean;
 }
 
 export interface Message {

@@ -1,10 +1,11 @@
-import { Bot, X } from "lucide-react";
+import { Bot, Trash2, X } from "lucide-react";
 
 interface Props {
   botName: string;
   botAvatar?: string;
   buttonColor: string;
   onClose: () => void;
+  onClear: () => void;
 }
 
 export function ChatHeader({
@@ -12,6 +13,7 @@ export function ChatHeader({
   botAvatar,
   buttonColor,
   onClose,
+  onClear,
 }: Props) {
   return (
     <div
@@ -36,6 +38,14 @@ export function ChatHeader({
           Online
         </span>
       </div>
+      <button
+        onClick={onClear}
+        className="p-1 rounded-full hover:bg-white/20 transition-colors border-0 cursor-pointer text-white bg-transparent"
+        title="Clear chat history"
+        aria-label="Clear history"
+      >
+        <Trash2 size={16} />
+      </button>
       <button
         onClick={onClose}
         className="p-1 rounded-full hover:bg-white/20 transition-colors border-0 cursor-pointer text-white bg-transparent"
