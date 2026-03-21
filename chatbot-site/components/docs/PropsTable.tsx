@@ -1,3 +1,8 @@
+"use client";
+
+import { motion, useInView } from "framer-motion";
+import { useRef, useState } from "react";
+
 const props = [
   {
     name: "apiEndpoint",
@@ -86,11 +91,27 @@ const props = [
 ];
 
 export function PropsTable() {
+  const [hoveredRow, setHoveredRow] = useState<number | null>(null);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-60px" });
+
   return (
-    <div className="rounded-2xl border border-white/10 overflow-hidden">
+    <div
+      ref={ref}
+      className="rounded-2xl border border-white/10 overflow-hidden"
+    >
+      {/* Subtle header glow line */}
+      <div className="h-px w-full bg-linear-to-r from-transparent via-[#00e5a0]/40 to-transparent" />
+
       <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-white/10 bg-white/5">
+        <thead className="sticky top-0 z-10">
+          <tr
+            className="border-b border-white/10"
+            style={{
+              background: "rgba(7,11,20,0.85)",
+              backdropFilter: "blur(16px)",
+            }}
+          >
             <th className="text-left px-4 py-3 text-gray-400 font-medium">
               Prop
             </th>
@@ -107,33 +128,70 @@ export function PropsTable() {
         </thead>
         <tbody>
           {props.map((p, i) => (
-            <tr
+            <motion.tr
               key={p.name}
-              className={`border-b border-white/5 ${i % 2 === 0 ? "bg-transparent" : "bg-white/2"}`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.3, delay: i * 0.04, ease: "easeOut" }}
+              onMouseEnter={() => setHoveredRow(i)}
+              onMouseLeave={() => setHoveredRow(null)}
+              className={`border-b border-white/5 transition-colors duration-150 relative ${
+                hoveredRow === i
+                  ? "bg-[#00e5a0]/4"
+                  : i % 2 === 0
+                    ? "bg-transparent"
+                    : "bg-white/2"
+              }`}
             >
-              <td className="px-4 py-3">
-                <code className="text-indigo-400 font-mono">{p.name}</code>
-                {p.required && (
-                  <span className="ml-2 text-[10px] text-red-400 bg-red-400/10 px-1.5 py-0.5 rounded-full">
-                    required
-                  </span>
-                )}
+              {/* Left accent bar on hover */}
+              <td className="px-4 py-3 relative">
+                <span
+                  className="absolute left-0 top-0 bottom-0 w-0.5 rounded-r-full transition-all duration-200"
+                  style={{
+                    background: hoveredRow === i ? "#00e5a0" : "transparent",
+                    boxShadow: hoveredRow === i ? "0 0 8px #00e5a0" : "none",
+                  }}
+                />
+                <div className="flex items-center gap-2 flex-wrap">
+                  <code
+                    className={`font-mono text-[13px] px-2 py-0.5 rounded-md transition-colors duration-150 ${
+                      hoveredRow === i
+                        ? "text-[#00e5a0] bg-[#00e5a0]/10"
+                        : "text-indigo-400 bg-indigo-400/10"
+                    }`}
+                  >
+                    {p.name}
+                  </code>
+                  {p.required && (
+                    <span className="text-[10px] text-red-400 bg-red-400/10 border border-red-400/20 px-1.5 py-0.5 rounded-full leading-none">
+                      required
+                    </span>
+                  )}
+                </div>
               </td>
+
               <td className="px-4 py-3">
-                <code className="text-emerald-400 font-mono text-xs">
+                <code className="text-emerald-400 font-mono text-xs bg-emerald-400/8 px-2 py-0.5 rounded-md border border-emerald-400/15">
                   {p.type}
                 </code>
               </td>
-              <td className="px-4 py-3 text-gray-400 text-xs hidden md:table-cell font-mono">
-                {p.default}
+
+              <td className="px-4 py-3 hidden md:table-cell">
+                <code className="text-[#7a8aaa] font-mono text-xs">
+                  {p.default}
+                </code>
               </td>
-              <td className="px-4 py-3 text-gray-400 text-xs hidden lg:table-cell">
+
+              <td className="px-4 py-3 text-gray-400 text-xs hidden lg:table-cell leading-relaxed">
                 {p.desc}
               </td>
-            </tr>
+            </motion.tr>
           ))}
         </tbody>
       </table>
+
+      {/* Footer glow line */}
+      <div className="h-px w-full bg-linear-to-r from-transparent via-white/10 to-transparent" />
     </div>
   );
 }
