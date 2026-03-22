@@ -1,5 +1,5 @@
 {
-  "name": "@pratham/chatbot",
+  "name": "chatterbox",
   "version": "0.1.0",
   "description": "Reusable floating chatbot widget with RAG support",
   "type": "module",
