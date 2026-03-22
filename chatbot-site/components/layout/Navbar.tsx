@@ -47,12 +47,15 @@ export function Navbar() {
         <Link href="/" className="flex items-center gap-2.5 font-bold text-lg">
           <div
             className="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black"
-            style={{ background: "linear-gradient(135deg, #00e5a0, #00b37d)", color: "#070b14" }}
+            style={{
+              background: "linear-gradient(135deg, #00e5a0, #00b37d)",
+              color: "#070b14",
+            }}
           >
             C
           </div>
           <span style={{ color: "#f0f4ff" }}>
-            chat<span style={{ color: "#00e5a0" }}>bot</span>
+            Chat<span style={{ color: "#00e5a0" }}>kit</span>
           </span>
         </Link>
 
@@ -63,13 +66,14 @@ export function Navbar() {
               href={link.href}
               className={cn(
                 "px-4 py-2 rounded-lg text-sm font-medium transition-all",
-                pathname === link.href
-                  ? "text-white"
-                  : "hover:text-white",
+                pathname === link.href ? "text-white" : "hover:text-white",
               )}
               style={{
                 color: pathname === link.href ? "#f0f4ff" : "#7a8aaa",
-                background: pathname === link.href ? "rgba(255,255,255,0.08)" : "transparent",
+                background:
+                  pathname === link.href
+                    ? "rgba(255,255,255,0.08)"
+                    : "transparent",
               }}
             >
               {link.label}
