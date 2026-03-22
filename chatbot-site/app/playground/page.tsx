@@ -25,7 +25,7 @@ export default function PlaygroundPage() {
       {/* Uncomment when your RAG server is deployed */}
       {/*
       <ChatBot
-        apiEndpoint="https://your-rag-server.onrender.com"
+        apiEndpoint="https://reusable-chatbot.onrender.com"
         botName="Chatbot Docs Bot"
         buttonColor="#6366f1"
         theme="dark"

@@ -254,15 +254,14 @@ export function ThemeCard({ theme }: { theme: Theme }) {
 
       {/* ── BACK ─────────────────────────────────────────────────────── */}
       <motion.div
+        initial={{ rotateY: -180 }}
         animate={{ rotateY: flipped ? 0 : -180 }}
         transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
         style={{
           backfaceVisibility: "hidden",
           WebkitBackfaceVisibility: "hidden",
-          rotateY: -180,
         }}
         className="absolute inset-0 rounded-2xl overflow-hidden flex flex-col"
-        onClick={(e) => e.stopPropagation()}
       >
         {/* Base */}
         <div
@@ -336,7 +335,10 @@ export function ThemeCard({ theme }: { theme: Theme }) {
         </div>
 
         {/* Shiki code */}
-        <div className="relative z-10 flex-1 overflow-auto">
+        <div
+          className="relative z-10 flex-1 overflow-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
           {shikiHtml ? (
             <>
               <div
@@ -375,7 +377,10 @@ export function ThemeCard({ theme }: { theme: Theme }) {
             back
           </p>
           <button
-            onClick={() => setFlipped(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setFlipped(false);
+            }}
             className="text-[10px] text-gray-500 hover:text-gray-300 transition-colors font-mono cursor-pointer"
           >
             ← back
