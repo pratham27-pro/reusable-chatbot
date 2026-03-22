@@ -1,5 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 
+type SpeechRecognitionConstructor = new () => SpeechRecognition;
+
 export function useVoice(onTranscript: (text: string) => void) {
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -7,22 +9,27 @@ export function useVoice(onTranscript: (text: string) => void) {
 
   // Voice INPUT — mic to text
   const startListening = useCallback(() => {
-    const SpeechRecognition =
-      window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognitionAPI: SpeechRecognitionConstructor | undefined =
+      window.SpeechRecognition ||
+      (
+        window as Window & {
+          webkitSpeechRecognition?: SpeechRecognitionConstructor;
+        }
+      ).webkitSpeechRecognition;
 
-    if (!SpeechRecognition) {
+    if (!SpeechRecognitionAPI) {
       alert("Voice input not supported in this browser. Use Chrome.");
       return;
     }
 
-    const recognition = new SpeechRecognition();
+    const recognition = new SpeechRecognitionAPI();
     recognition.lang = "en-US";
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
-    recognition.onresult = (e) => {
+    recognition.onresult = (e: SpeechRecognitionEvent) => {
       const transcript = e.results[0][0].transcript;
-      onTranscript(transcript); // sends the spoken text as a message
+      onTranscript(transcript);
     };
 
     recognition.onend = () => setIsListening(false);
@@ -41,7 +48,7 @@ export function useVoice(onTranscript: (text: string) => void) {
   // Voice OUTPUT — text to speech
   const speak = useCallback((text: string) => {
     if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel(); // stop any ongoing speech
+    window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 1;
     utterance.pitch = 1;
