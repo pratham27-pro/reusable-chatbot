@@ -99,7 +99,7 @@ The chatbot widget is a pure frontend package. You need to run the companion RAG
 ### Run Locally
 
 ```bash
-git clone https://github.com/pratham/chatbot
+git clone https://github.com/pratham27-pro/chatbot
 cd rag-server
 
 pip install -r requirements.txt
@@ -214,4 +214,4 @@ Visit the [Themes Gallery](https://your-chatbot-site.vercel.app/themes) for read
 
 ## License
 
-MIT © [Pratham Jain](https://github.com/pratham)
+MIT © [Pratham Jain](https://github.com/pratham27-pro)

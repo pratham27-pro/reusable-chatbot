@@ -214,4 +214,4 @@ Visit the [Themes Gallery](https://your-chatbot-site.vercel.app/themes) for read
 
 ## License
 
-MIT © [Pratham Jain](https://github.com/pratham)
+MIT © [Pratham Jain](https://github.com/pratham27-pro)
