@@ -11,11 +11,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "@pratham/chatbot — Floating RAG Chatbot for React",
+  title: "@pratham_jain/chatkit — Floating RAG Chatbot for React",
   description:
     "Drop a fully functional RAG chatbot into any React app in 60 seconds. Free, open source, no credit card.",
   openGraph: {
-    title: "@pratham/chatbot",
+    title: "@pratham_jain/chatkit",
     description:
       "Drop a fully functional RAG chatbot into any React app in 60 seconds.",
     type: "website",
