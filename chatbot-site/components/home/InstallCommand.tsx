@@ -3,9 +3,9 @@ import { Check, Copy, Terminal } from "lucide-react";
 import { useState } from "react";
 
 const commands = [
-  { label: "npm", cmd: "npm install @pratham/chatbot" },
-  { label: "pnpm", cmd: "pnpm add @pratham/chatbot" },
-  { label: "yarn", cmd: "yarn add @pratham/chatbot" },
+  { label: "npm", cmd: "npm install @pratham_jain/chatkit" },
+  { label: "pnpm", cmd: "pnpm add @pratham_jain/chatkit" },
+  { label: "yarn", cmd: "yarn add @pratham_jain/chatkit" },
 ];
 
 export function InstallCommand() {
@@ -29,8 +29,16 @@ export function InstallCommand() {
             className="px-3 py-1 rounded-md text-xs font-mono transition-all"
             style={
               active === i
-                ? { background: "rgba(0,229,160,0.15)", color: "#00e5a0", border: "1px solid rgba(0,229,160,0.25)" }
-                : { background: "rgba(255,255,255,0.04)", color: "#7a8aaa", border: "1px solid rgba(255,255,255,0.06)" }
+                ? {
+                    background: "rgba(0,229,160,0.15)",
+                    color: "#00e5a0",
+                    border: "1px solid rgba(0,229,160,0.25)",
+                  }
+                : {
+                    background: "rgba(255,255,255,0.04)",
+                    color: "#7a8aaa",
+                    border: "1px solid rgba(255,255,255,0.06)",
+                  }
             }
           >
             {c.label}

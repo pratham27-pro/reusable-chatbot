@@ -45,15 +45,11 @@ export function Navbar() {
     >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5 font-bold text-lg">
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black"
-            style={{
-              background: "linear-gradient(135deg, #00e5a0, #00b37d)",
-              color: "#070b14",
-            }}
-          >
-            C
-          </div>
+          <img
+            src="/icon.png"
+            alt="icon"
+            className="w-8 h-8 rounded-lg object-contain"
+          />
           <span style={{ color: "#f0f4ff" }}>
             Chat<span style={{ color: "#00e5a0" }}>kit</span>
           </span>
@@ -83,7 +79,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           <Link
-            href="https://www.npmjs.com/package/@pratham/chatbot"
+            href="https://www.npmjs.com/package/@pratham_jain/chatkit"
             target="_blank"
             className="transition-colors"
             title="View on npm"
@@ -94,7 +90,7 @@ export function Navbar() {
             <NpmIcon size={22} />
           </Link>
           <Link
-            href="https://github.com/pratham/chatbot"
+            href="https://github.com/pratham27-pro/reusable-chatbot"
             target="_blank"
             className="transition-colors"
             title="View on GitHub"

@@ -1,8 +1,8 @@
 "use client";
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
-import Link from "next/link";
 import { ArrowRight, Terminal } from "lucide-react";
+import Link from "next/link";
+import { useRef } from "react";
 
 export function CTASection() {
   const ref = useRef<HTMLDivElement>(null);
@@ -12,8 +12,11 @@ export function CTASection() {
     <section ref={ref} className="relative py-28 overflow-hidden">
       {/* Center glow */}
       <div
-        className="orb w-[700px] h-[400px] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={{ background: "radial-gradient(ellipse, rgba(0,229,160,0.1) 0%, transparent 70%)" }}
+        className="orb w-175 h-100 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        style={{
+          background:
+            "radial-gradient(ellipse, rgba(0,229,160,0.1) 0%, transparent 70%)",
+        }}
       />
 
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
@@ -23,7 +26,8 @@ export function CTASection() {
           transition={{ duration: 0.6 }}
           className="glass rounded-3xl p-12 md:p-16"
           style={{
-            boxShadow: "0 0 80px rgba(0,229,160,0.06), 0 40px 100px rgba(0,0,0,0.4)",
+            boxShadow:
+              "0 0 80px rgba(0,229,160,0.06), 0 40px 100px rgba(0,0,0,0.4)",
             border: "1px solid rgba(0,229,160,0.1)",
           }}
         >
@@ -52,7 +56,10 @@ export function CTASection() {
           >
             Your app is one{" "}
             <span
-              style={{ color: "#00e5a0", textShadow: "0 0 30px rgba(0,229,160,0.3)" }}
+              style={{
+                color: "#00e5a0",
+                textShadow: "0 0 30px rgba(0,229,160,0.3)",
+              }}
             >
               &lt;ChatBot /&gt;
             </span>{" "}
@@ -116,7 +123,7 @@ export function CTASection() {
             }}
           >
             <span style={{ color: "#7a8aaa" }}>$</span>
-            <span>npm install @pratham/chatbot</span>
+            <span>npm install @pratham_jain/chatkit</span>
           </motion.div>
         </motion.div>
       </div>

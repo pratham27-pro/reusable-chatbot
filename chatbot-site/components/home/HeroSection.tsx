@@ -1,31 +1,46 @@
 "use client";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { ArrowRight, Star } from "lucide-react";
+import Link from "next/link";
 import { useRef } from "react";
 import { FloatingChatDemo } from "./FloatingChatDemo";
 import { InstallCommand } from "./InstallCommand";
-import Link from "next/link";
-import { ArrowRight, Star } from "lucide-react";
 
 export function HeroSection() {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
   const y = useTransform(scrollYProgress, [0, 1], [0, 80]);
   const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
   return (
-    <section ref={ref} className="relative min-h-screen flex items-center overflow-hidden pt-20">
+    <section
+      ref={ref}
+      className="relative min-h-screen flex items-center overflow-hidden pt-20"
+    >
       {/* Background orbs */}
       <div
-        className="orb w-[600px] h-[600px] -top-32 -left-48"
-        style={{ background: "radial-gradient(circle, rgba(0,229,160,0.12) 0%, transparent 70%)" }}
+        className="orb w-150 h-150 -top-32 -left-48"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(0,229,160,0.12) 0%, transparent 70%)",
+        }}
       />
       <div
-        className="orb w-[500px] h-[500px] top-20 -right-32"
-        style={{ background: "radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)" }}
+        className="orb w-125 h-125 top-20 -right-32"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)",
+        }}
       />
       <div
-        className="orb w-[300px] h-[300px] bottom-0 left-1/2 -translate-x-1/2"
-        style={{ background: "radial-gradient(circle, rgba(0,229,160,0.06) 0%, transparent 70%)" }}
+        className="orb w-75 h-75 bottom-0 left-1/2 -translate-x-1/2"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(0,229,160,0.06) 0%, transparent 70%)",
+        }}
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
@@ -44,7 +59,10 @@ export function HeroSection() {
               }}
             >
               <Star size={12} fill="#00e5a0" className="text-[#00e5a0]" />
-              <span className="text-xs font-medium" style={{ color: "#00e5a0" }}>
+              <span
+                className="text-xs font-medium"
+                style={{ color: "#00e5a0" }}
+              >
                 Open source · Free forever · No credit card
               </span>
             </motion.div>
@@ -124,15 +142,17 @@ export function HeroSection() {
               className="flex items-center gap-4 pt-8"
             >
               <div className="flex -space-x-2">
-                {["#2563eb", "#7c3aed", "#db2777", "#ea580c"].map((color, i) => (
-                  <div
-                    key={i}
-                    className="w-8 h-8 rounded-full border-2 border-[#070b14] flex items-center justify-center text-[10px] font-bold text-white"
-                    style={{ background: color, zIndex: 4 - i }}
-                  >
-                    {["J", "M", "A", "R"][i]}
-                  </div>
-                ))}
+                {["#2563eb", "#7c3aed", "#db2777", "#ea580c"].map(
+                  (color, i) => (
+                    <div
+                      key={i}
+                      className="w-8 h-8 rounded-full border-2 border-[#070b14] flex items-center justify-center text-[10px] font-bold text-white"
+                      style={{ background: color, zIndex: 4 - i }}
+                    >
+                      {["J", "M", "A", "R"][i]}
+                    </div>
+                  ),
+                )}
               </div>
               <p className="text-sm" style={{ color: "#7a8aaa" }}>
                 Loved by developers building fast
@@ -144,14 +164,20 @@ export function HeroSection() {
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.4, type: "spring", stiffness: 100 }}
+            transition={{
+              duration: 0.8,
+              delay: 0.4,
+              type: "spring",
+              stiffness: 100,
+            }}
             className="flex justify-center lg:justify-end relative"
           >
             {/* Glow behind chat */}
             <div
               className="absolute inset-0 -z-10"
               style={{
-                background: "radial-gradient(ellipse at center, rgba(0,229,160,0.12) 0%, transparent 60%)",
+                background:
+                  "radial-gradient(ellipse at center, rgba(0,229,160,0.12) 0%, transparent 60%)",
                 filter: "blur(20px)",
               }}
             />
