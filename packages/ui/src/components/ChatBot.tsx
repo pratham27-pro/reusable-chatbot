@@ -1,5 +1,5 @@
 import { MessageCircle, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useDraggable } from "../hooks/useDraggable";
 import { cn } from "../lib/cn";
 import type { ChatBotProps } from "../types";
@@ -18,56 +18,76 @@ export function ChatBot({
   floatPosition = "bottom-right",
 }: ChatBotProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const clickedRef = useRef(false);
 
-  // Initial position based on floatPosition prop
-  const initialPosition =
-    floatPosition === "bottom-right"
-      ? { x: window.innerWidth - 80, y: window.innerHeight - 80 }
-      : { x: 24, y: window.innerHeight - 80 };
+  const {
+    dragPosition,
+    isDragging,
+    hasMoved,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+  } = useDraggable();
 
-  const { position, isDragging, onPointerDown, onPointerMove, onPointerUp } =
-    useDraggable(initialPosition);
-
-  // Distinguish drag vs click — don't toggle window if user was dragging
   const handlePointerDown = (e: React.PointerEvent) => {
-    clickedRef.current = true;
     onPointerDown(e);
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (isDragging) clickedRef.current = false;
     onPointerMove(e);
   };
 
   const handlePointerUp = () => {
     onPointerUp();
-    if (clickedRef.current) setIsOpen((o) => !o);
-    clickedRef.current = false;
+    // Only toggle chat window if user didn't drag
+    if (!hasMoved.current) setIsOpen((o) => !o);
   };
 
-  // Chat window appears above the button, aligned to whichever side it's on
-  const windowStyle =
-    position.x > window.innerWidth / 2
-      ? { bottom: "70px", right: "0" }
-      : { bottom: "70px", left: "0" };
+  // ─── Position Logic ───────────────────────────────────────────────
+  // dragPosition === null  →  user hasn't dragged yet
+  //                         use bottom/right CSS so it's always
+  //                         glued to the viewport corner (real chatbot behavior)
+  //
+  // dragPosition !== null  →  user dragged it somewhere this session
+  //                         use fixed top/left coordinates
+  //                         resets to null on page refresh automatically
+  //                         (no localStorage — intentional)
+
+  const containerStyle: React.CSSProperties =
+    dragPosition === null
+      ? {
+          position: "fixed",
+          zIndex: 9999,
+          bottom: "24px",
+          ...(floatPosition === "bottom-right"
+            ? { right: "24px" }
+            : { left: "24px" }),
+        }
+      : {
+          position: "fixed",
+          zIndex: 9999,
+          left: dragPosition.x,
+          top: dragPosition.y,
+        };
+
+  // Chat window flips side based on which half of screen the button is on
+  // When not dragged — use floatPosition prop to decide
+  // When dragged — calculate from actual position
+  const isOnRightHalf =
+    dragPosition === null
+      ? floatPosition === "bottom-right"
+      : dragPosition.x > window.innerWidth / 2;
+
+  const windowStyle: React.CSSProperties = {
+    position: "absolute",
+    bottom: "70px",
+    ...(isOnRightHalf ? { right: "0" } : { left: "0" }),
+  };
 
   return (
-    <div
-      className="chatbot-rag-root"
-      style={{
-        position: "fixed",
-        zIndex: 9999,
-        left: position.x,
-        top: position.y,
-      }}
-    >
-      <div
-        className="flex flex-col items-end gap-3"
-        style={{ position: "relative" }}
-      >
+    <div className="chatbot-rag-root" style={containerStyle}>
+      <div style={{ position: "relative" }}>
         {isOpen && (
-          <div style={{ position: "absolute", ...windowStyle }}>
+          <div style={windowStyle}>
             <ChatWindow
               apiEndpoint={apiEndpoint}
               botName={botName}
@@ -89,7 +109,7 @@ export function ChatBot({
           onPointerUp={handlePointerUp}
           style={{
             backgroundColor: buttonColor,
-            cursor: isDragging ? "grabbing" : "grab",
+            cursor: isDragging ? "grabbing" : "pointer",
           }}
           className={cn(
             "w-14 h-14 rounded-full shadow-lg",
