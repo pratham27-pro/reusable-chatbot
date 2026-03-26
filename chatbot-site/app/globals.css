@@ -75,11 +75,11 @@
     color: #f0f4ff;
     font-family: var(--font-geist), system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
   }
 
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 }
 
@@ -117,20 +117,34 @@ body::before {
 
 /* ── Shimmer animation for code highlight ── */
 @keyframes shimmer {
-  from { background-position: -200% 0; }
-  to   { background-position:  200% 0; }
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
 }
 
 .shimmer-line {
-  background: linear-gradient(90deg, transparent 0%, rgba(0,229,160,0.15) 50%, transparent 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 229, 160, 0.15) 50%,
+    transparent 100%
+  );
   background-size: 200% 100%;
   animation: shimmer 2s ease-in-out infinite;
 }
 
 /* ── Floating pulse for widget ── */
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-8px); }
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 .float-anim {
@@ -139,8 +153,13 @@ body::before {
 
 /* ── Typing cursor blink ── */
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 .cursor-blink {
@@ -148,7 +167,57 @@ body::before {
 }
 
 /* ── Scrollbar styling ── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(0,229,160,0.3); }
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 229, 160, 0.3);
+}
+
+@keyframes dotsScroll {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 28px;
+  }
+}
+
+.dots-scroll-bg {
+  animation: dotsScroll 18s linear infinite;
+}
+
+.shiki-pg .shiki,
+.shiki-pg .shiki code {
+  background: transparent !important;
+  font-family: "Geist Mono", "Fira Code", monospace;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.shiki-pg .shiki {
+  padding: 20px;
+  margin: 0;
+}
+
+@keyframes navSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.navbar-animate {
+  animation: navSlideDown 0.4s ease forwards;
+}

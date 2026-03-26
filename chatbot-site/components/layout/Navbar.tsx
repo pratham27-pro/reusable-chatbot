@@ -35,8 +35,9 @@ export function Navbar() {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="fixed top-0 left-0 right-0 z-50"
+      className="fixed top-0 left-0 right-0"
       style={{
+        zIndex: 1000,
         background: "rgba(7, 11, 20, 0.7)",
         backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
@@ -56,7 +57,7 @@ export function Navbar() {
         </Link>
 
         <div
-          className="hidden md:flex items-center gap-1"
+          className="flex items-center gap-1 max-md:hidden"
           style={{ position: "relative", zIndex: 51 }}
         >
           {navLinks.map((link) => (
