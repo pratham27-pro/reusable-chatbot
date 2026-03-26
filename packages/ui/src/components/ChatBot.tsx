@@ -61,6 +61,7 @@ export function ChatBot({
           ...(floatPosition === "bottom-right"
             ? { right: "24px" }
             : { left: "24px" }),
+          pointerEvents: "none",
         }
       : {
           position: "fixed",
@@ -85,7 +86,7 @@ export function ChatBot({
 
   return (
     <div className="chatbot-rag-root" style={containerStyle}>
-      <div style={{ position: "relative" }}>
+      <div style={{ position: "relative", pointerEvents: "auto" }}>
         {isOpen && (
           <div style={windowStyle}>
             <ChatWindow

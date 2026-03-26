@@ -22,6 +22,9 @@ export function ConfigPanel({ config, set }: Props) {
         background: "rgba(13,20,32,0.7)",
         backdropFilter: "blur(20px)",
         boxShadow: `0 0 0 1px ${accent(0.08)}, 0 8px 40px rgba(0,0,0,0.3)`,
+        position: "relative",
+        zIndex: 1,
+        isolation: "isolate",
       }}
     >
       {/* Panel header */}

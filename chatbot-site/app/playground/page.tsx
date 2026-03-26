@@ -39,11 +39,11 @@ export default function PlaygroundPage() {
         style={{ zIndex: 1 }}
       >
         {/* Heading */}
-        <div className="relative text-center mb-14">
+        <div className="relative text-center mb-14 overflow-hidden isolate">
           <span
             aria-hidden
             className="pointer-events-none select-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[clamp(72px,16vw,160px)] font-black leading-none text-white/2.5 blur-[3px] tracking-tight whitespace-nowrap"
-            style={{ fontFamily: "Geist, sans-serif" }}
+            style={{ fontFamily: "Geist, sans-serif", top: "50%", zIndex: -1 }}
           >
             Play
           </span>
@@ -103,7 +103,7 @@ export default function PlaygroundPage() {
         </div>
 
         {/* Main grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6 items-start pt-4 mt-2">
           <ConfigPanel config={config} set={set} />
           <PreviewPanel config={config} />
         </div>

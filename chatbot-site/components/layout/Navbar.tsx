@@ -55,7 +55,10 @@ export function Navbar() {
           </span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-1">
+        <div
+          className="hidden md:flex items-center gap-1"
+          style={{ position: "relative", zIndex: 51 }}
+        >
           {navLinks.map((link) => (
             <Link
               key={link.href}
