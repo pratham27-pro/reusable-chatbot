@@ -1,5 +1,6 @@
 export interface ChatBotProps {
-  apiEndpoint: string;
+  apiEndpoint?: string;
+  apiKey?: string;
   botName?: string;
   botAvatar?: string;
   buttonColor?: string;

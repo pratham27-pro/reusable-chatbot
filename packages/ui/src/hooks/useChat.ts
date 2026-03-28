@@ -34,14 +34,15 @@ function saveMessages(apiEndpoint: string, messages: Message[]) {
 }
 
 export function useChat(
-  apiEndpoint: string,
+  apiEndpoint: string | undefined,
   systemPrompt?: string,
   persistHistory = true,
   knowledgeBaseEnabled = false,
   collectionId = "default",
+  apiKey?: string,
 ) {
   const [messages, setMessages] = useState<Message[]>(() =>
-    persistHistory ? loadMessages(apiEndpoint) : [],
+    persistHistory && apiEndpoint ? loadMessages(apiEndpoint) : [],
   );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +50,7 @@ export function useChat(
 
   // Persist to localStorage whenever messages change
   useEffect(() => {
-    if (persistHistory) saveMessages(apiEndpoint, messages);
+    if (persistHistory && apiEndpoint) saveMessages(apiEndpoint, messages);
   }, [messages, apiEndpoint, persistHistory]);
 
   const sendMessage = useCallback(
@@ -71,10 +72,93 @@ export function useChat(
         { id: botMsgId, role: "bot", content: "", timestamp: new Date() },
       ]);
       setIsLoading(true);
+      // ── Guard: must have one or the other ──
+      if (!apiKey && !apiEndpoint) {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === botMsgId
+              ? {
+                  ...m,
+                  content:
+                    "⚠️ Configuration error: please provide either `apiKey` or `apiEndpoint` to use this chatbot.",
+                }
+              : m,
+          ),
+        );
+        setIsLoading(false);
+        return;
+      }
 
       abortRef.current = new AbortController();
 
       try {
+        // ── Path 1: Direct Groq (apiKey provided, no backend needed) ──
+        if (apiKey) {
+          const res = await fetch(
+            "https://api.groq.com/openai/v1/chat/completions",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${apiKey}`,
+              },
+              signal: abortRef.current.signal,
+              body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: [
+                  {
+                    role: "system",
+                    content: systemPrompt || "You are a helpful assistant.",
+                  },
+                  ...messages.slice(-10).map((m) => ({
+                    role: m.role === "bot" ? "assistant" : "user",
+                    content: m.content,
+                  })),
+                  { role: "user", content },
+                ],
+                stream: true,
+              }),
+            },
+          );
+
+          if (!res.ok) throw new Error(`Groq responded with ${res.status}`);
+
+          // Parse SSE stream from Groq
+          const reader = res.body?.getReader();
+          const decoder = new TextDecoder();
+
+          if (reader) {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              const text = decoder.decode(value, { stream: true });
+              // Groq SSE lines: "data: {...}\n"
+              for (const line of text.split("\n")) {
+                if (!line.startsWith("data: ") || line === "data: [DONE]")
+                  continue;
+                try {
+                  const json = JSON.parse(line.replace("data: ", ""));
+                  const token = json.choices?.[0]?.delta?.content;
+                  if (token) {
+                    setMessages((prev) =>
+                      prev.map((m) =>
+                        m.id === botMsgId
+                          ? { ...m, content: m.content + token }
+                          : m,
+                      ),
+                    );
+                  }
+                } catch {
+                  /* skip malformed chunks */
+                }
+              }
+            }
+          }
+
+          return; // don't fall through to apiEndpoint path
+        }
+
+        // ── Path 2: RAG server (existing logic) ──
         const res = await fetch(`${apiEndpoint}/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -86,7 +170,7 @@ export function useChat(
               role: m.role === "bot" ? "assistant" : "user",
               content: m.content,
             })),
-            use_knowledge_base: knowledgeBaseEnabled, // ← NEW
+            use_knowledge_base: knowledgeBaseEnabled,
             collection_id: collectionId,
           }),
         });
@@ -129,12 +213,19 @@ export function useChat(
         abortRef.current = null;
       }
     },
-    [apiEndpoint, messages, systemPrompt, knowledgeBaseEnabled, collectionId],
+    [
+      apiEndpoint,
+      apiKey,
+      messages,
+      systemPrompt,
+      knowledgeBaseEnabled,
+      collectionId,
+    ],
   );
 
   const clearMessages = useCallback(() => {
     setMessages([]);
-    localStorage.removeItem(getStorageKey(apiEndpoint)); // also wipe from storage
+    if (apiEndpoint) localStorage.removeItem(getStorageKey(apiEndpoint)); // also wipe from storage
   }, [apiEndpoint]);
 
   const stopGeneration = () => abortRef.current?.abort();

@@ -7,7 +7,8 @@ import { ChatMessage } from "./ChatMessage";
 import { DocUploader } from "./DocUploader";
 
 interface ChatWindowProps {
-  apiEndpoint: string;
+  apiEndpoint?: string;
+  apiKey?: string;
   botName: string;
   botAvatar?: string;
   buttonColor: string;
@@ -23,6 +24,7 @@ interface ChatWindowProps {
 
 export function ChatWindow({
   apiEndpoint,
+  apiKey,
   botName,
   botAvatar,
   buttonColor,
@@ -41,6 +43,7 @@ export function ChatWindow({
     persistHistory,
     knowledgeBaseEnabled,
     collectionId,
+    apiKey,
   );
   const bottomRef = useRef<HTMLDivElement>(null);
   const dark = theme === "dark";

@@ -7,6 +7,7 @@ import { ChatWindow } from "./ChatWindow";
 
 export function ChatBot({
   apiEndpoint,
+  apiKey,
   botName = "Assistant",
   botAvatar,
   buttonColor = "#6366f1",
@@ -18,6 +19,11 @@ export function ChatBot({
   collectionId = "default",
   floatPosition = "bottom-right",
 }: ChatBotProps) {
+  if (!apiEndpoint && !apiKey) {
+    console.error(
+      "[ChatKit] ❌ You must provide either `apiKey` (direct Groq) or `apiEndpoint` (your backend). The chatbot will not work without one of these.",
+    );
+  }
   const [isOpen, setIsOpen] = useState(false);
 
   const {
@@ -92,6 +98,7 @@ export function ChatBot({
           <div style={windowStyle}>
             <ChatWindow
               apiEndpoint={apiEndpoint}
+              apiKey={apiKey}
               botName={botName}
               botAvatar={botAvatar}
               buttonColor={buttonColor}

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { cn } from "../lib/cn";
 
 interface Props {
-  apiEndpoint: string;
+  apiEndpoint?: string;
   theme: "light" | "dark";
   collectionId?: string;
 }
