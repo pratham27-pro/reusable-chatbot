@@ -7,9 +7,16 @@ const props = [
   {
     name: "apiEndpoint",
     type: "string",
-    required: true,
+    required: false,
     default: "—",
-    desc: "URL of your RAG server",
+    desc: "URL of your backend server. Required if apiKey is not provided.",
+  },
+  {
+    name: "apiKey",
+    type: "string",
+    required: false,
+    default: "—",
+    desc: "Groq API key for direct browser-to-Groq calls. Use only for demos — key is visible in bundle. Not needed if apiEndpoint is provided.",
   },
   {
     name: "botName",
@@ -74,7 +81,6 @@ const props = [
     default: "false",
     desc: "Show PDF/DOCX upload button; sends documents to your RAG server",
   },
-  // ← NEW
   {
     name: "collectionId",
     type: "string",
@@ -108,7 +114,6 @@ export function PropsTable() {
       ref={ref}
       className="rounded-2xl border border-white/10 overflow-hidden"
     >
-      {/* Subtle header glow line */}
       <div className="h-px w-full bg-linear-to-r from-transparent via-[#00e5a0]/40 to-transparent" />
 
       <table className="w-full text-sm">
@@ -126,10 +131,11 @@ export function PropsTable() {
             <th className="text-left px-4 py-3 text-gray-400 font-medium">
               Type
             </th>
-            <th className="text-left px-4 py-3 text-gray-400 font-medium hidden md:table-cell">
+            {/* ← fixed: table-cell max-md:hidden instead of hidden md:table-cell */}
+            <th className="text-left px-4 py-3 text-gray-400 font-medium table-cell max-md:hidden">
               Default
             </th>
-            <th className="text-left px-4 py-3 text-gray-400 font-medium hidden lg:table-cell">
+            <th className="text-left px-4 py-3 text-gray-400 font-medium table-cell max-lg:hidden">
               Description
             </th>
           </tr>
@@ -151,7 +157,6 @@ export function PropsTable() {
                     : "bg-white/2"
               }`}
             >
-              {/* Left accent bar on hover */}
               <td className="px-4 py-3 relative">
                 <span
                   className="absolute left-0 top-0 bottom-0 w-0.5 rounded-r-full transition-all duration-200"
@@ -184,13 +189,14 @@ export function PropsTable() {
                 </code>
               </td>
 
-              <td className="px-4 py-3 hidden md:table-cell">
+              {/* ← fixed */}
+              <td className="px-4 py-3 table-cell max-md:hidden">
                 <code className="text-[#7a8aaa] font-mono text-xs">
                   {p.default}
                 </code>
               </td>
 
-              <td className="px-4 py-3 text-gray-400 text-xs hidden lg:table-cell leading-relaxed">
+              <td className="px-4 py-3 text-gray-400 text-xs table-cell max-lg:hidden leading-relaxed">
                 {p.desc}
               </td>
             </motion.tr>
@@ -198,7 +204,6 @@ export function PropsTable() {
         </tbody>
       </table>
 
-      {/* Footer glow line */}
       <div className="h-px w-full bg-linear-to-r from-transparent via-white/10 to-transparent" />
     </div>
   );
