@@ -37,6 +37,8 @@ export function useChat(
   apiEndpoint: string,
   systemPrompt?: string,
   persistHistory = true,
+  knowledgeBaseEnabled = false,
+  collectionId = "default",
 ) {
   const [messages, setMessages] = useState<Message[]>(() =>
     persistHistory ? loadMessages(apiEndpoint) : [],
@@ -84,6 +86,8 @@ export function useChat(
               role: m.role === "bot" ? "assistant" : "user",
               content: m.content,
             })),
+            use_knowledge_base: knowledgeBaseEnabled, // ← NEW
+            collection_id: collectionId,
           }),
         });
 
@@ -125,7 +129,7 @@ export function useChat(
         abortRef.current = null;
       }
     },
-    [apiEndpoint, messages, systemPrompt],
+    [apiEndpoint, messages, systemPrompt, knowledgeBaseEnabled, collectionId],
   );
 
   const clearMessages = useCallback(() => {

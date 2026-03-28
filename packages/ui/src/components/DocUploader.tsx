@@ -5,9 +5,14 @@ import { cn } from "../lib/cn";
 interface Props {
   apiEndpoint: string;
   theme: "light" | "dark";
+  collectionId?: string;
 }
 
-export function DocUploader({ apiEndpoint, theme }: Props) {
+export function DocUploader({
+  apiEndpoint,
+  theme,
+  collectionId = "default",
+}: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
@@ -19,6 +24,7 @@ export function DocUploader({ apiEndpoint, theme }: Props) {
     try {
       const form = new FormData();
       form.append("file", file);
+      form.append("collection_id", collectionId);
       const res = await fetch(`${apiEndpoint}/upload-doc`, {
         method: "POST",
         body: form,

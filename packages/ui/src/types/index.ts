@@ -8,6 +8,7 @@ export interface ChatBotProps {
   welcomeMessage?: string;
   theme?: "light" | "dark";
   knowledgeBaseEnabled?: boolean;
+  collectionId?: string;
   placeholder?: string;
   width?: number;
   height?: number;

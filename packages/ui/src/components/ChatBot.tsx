@@ -15,6 +15,7 @@ export function ChatBot({
   placeholder = "Type a message...",
   systemPrompt = "You are a helpful assistant.",
   knowledgeBaseEnabled = false,
+  collectionId = "default",
   floatPosition = "bottom-right",
 }: ChatBotProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -99,6 +100,7 @@ export function ChatBot({
               placeholder={placeholder}
               systemPrompt={systemPrompt}
               knowledgeBaseEnabled={knowledgeBaseEnabled}
+              collectionId={collectionId}
               onClose={() => setIsOpen(false)}
             />
           </div>

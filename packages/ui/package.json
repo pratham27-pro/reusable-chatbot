@@ -1,6 +1,6 @@
 {
   "name": "@pratham_jain/chatkit",
-  "version": "0.2.2",
+  "version": "1.0.0",
   "description": "Reusable floating chatbot widget with RAG support",
   "type": "module",
   "module": "dist/index.js",

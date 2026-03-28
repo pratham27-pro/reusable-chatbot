@@ -16,6 +16,7 @@ interface ChatWindowProps {
   placeholder: string;
   systemPrompt: string;
   knowledgeBaseEnabled: boolean;
+  collectionId?: string;
   onClose: () => void;
   persistHistory?: boolean;
 }
@@ -30,6 +31,7 @@ export function ChatWindow({
   placeholder,
   systemPrompt,
   knowledgeBaseEnabled,
+  collectionId = "default",
   onClose,
   persistHistory = true,
 }: ChatWindowProps) {
@@ -37,6 +39,8 @@ export function ChatWindow({
     apiEndpoint,
     systemPrompt,
     persistHistory,
+    knowledgeBaseEnabled,
+    collectionId,
   );
   const bottomRef = useRef<HTMLDivElement>(null);
   const dark = theme === "dark";
@@ -107,7 +111,11 @@ export function ChatWindow({
       </div>
 
       {knowledgeBaseEnabled && (
-        <DocUploader apiEndpoint={apiEndpoint} theme={theme} />
+        <DocUploader
+          apiEndpoint={apiEndpoint}
+          theme={theme}
+          collectionId={collectionId}
+        />
       )}
       <ChatInput
         onSend={sendMessage}
