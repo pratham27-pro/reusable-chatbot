@@ -72,7 +72,15 @@ const props = [
     type: "boolean",
     required: false,
     default: "false",
-    desc: "Show PDF/DOCX upload button in the chat",
+    desc: "Show PDF/DOCX upload button; sends documents to your RAG server",
+  },
+  // ← NEW
+  {
+    name: "collectionId",
+    type: "string",
+    required: false,
+    default: '"default"',
+    desc: "Unique identifier for your knowledge base. Use a different ID per app to keep documents isolated on the shared RAG server",
   },
   {
     name: "enableVoice",
