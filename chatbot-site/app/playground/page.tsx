@@ -28,6 +28,8 @@ export default function PlaygroundPage() {
         welcomeMessage="Ask me anything about @pratham_jain/chatkit!"
         systemPrompt="You are a helpful assistant for the @pratham_jain/chatkit npm package."
         floatPosition="bottom-right"
+        knowledgeBaseEnabled={true}
+        collectionId="my-chatkit-docs"
       />
 
       {/* Background layers — z-index 0, never fights navbar z-50 */}

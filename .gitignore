@@ -78,3 +78,5 @@ models/
 
 
 chatbot-test/
+
+chroma_db/

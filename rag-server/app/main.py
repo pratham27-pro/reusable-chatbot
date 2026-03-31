@@ -3,12 +3,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.services.rag_service import ingest_text, is_collection_empty
 import os
+import asyncio
 
 KNOWLEDGE_FILE = os.path.join(os.path.dirname(__file__), "..", "chatkit_knowledge.md")
 COLLECTION_ID = "default"
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
+def _ingest_knowledge_base():
     if is_collection_empty(COLLECTION_ID):
         try:
             with open(KNOWLEDGE_FILE, "r", encoding="utf-8") as f:
@@ -19,6 +19,10 @@ async def lifespan(app: FastAPI):
             print(f"⚠️ Failed to ingest knowledge base: {e}")
     else:
         print("✅ Knowledge base already loaded, skipping")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    asyncio.get_event_loop().run_in_executor(None, _ingest_knowledge_base)
     yield
 
 app = FastAPI(title="ChatBot RAG Server", lifespan=lifespan)

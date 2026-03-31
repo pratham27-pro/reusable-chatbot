@@ -6,7 +6,7 @@ langchain-community
 langchain-groq
 langchain-text-splitters
 chromadb
-sentence-transformers
 pypdf
 python-docx
 python-dotenv
+fastembed
