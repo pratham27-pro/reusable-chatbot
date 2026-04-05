@@ -116,7 +116,7 @@ Point `apiEndpoint` to the shared RAG server and you're done:
 <ChatBot apiEndpoint="https://reusable-chatbot.onrender.com" />
 ```
 
-The shared server runs Groq + ChromaDB and is free to use. Set a unique `collectionId` so your documents stay isolated from other users.
+The shared server runs Groq + Pinecone and is free to use. Set a unique `collectionId` so your documents stay isolated from other users.
 
 > ⚠️ The shared server uses ephemeral storage — uploaded documents are cleared
 > on server restart. For persistent storage, self-host the RAG server (see below).
@@ -198,7 +198,7 @@ GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxx
 
 ### Self-Hosting the RAG Server
 
-The companion RAG server is a FastAPI + ChromaDB + LangChain.js Python server included in this repo.
+The companion RAG server is a FastAPI + Pinecone + LangChain.js Python server included in this repo.
 
 **Prerequisites**
 
@@ -222,9 +222,11 @@ uvicorn app.main:app --reload --port 8000
 **`.env` Reference**
 
 ```env
-GROQ_API_KEY=your_groq_key_here
-CHROMA_PERSIST_DIR=./chroma_db
-CHROMA_IN_MEMORY=false
+GROQ_API_KEY=
+
+PINECONE_API_KEY=
+PINECONE_INDEX_NAME=
+PINECONE_HOST=
 ```
 
 **API Endpoints**
@@ -268,7 +270,7 @@ import ChatBotWrapper from "@/components/ChatBotWrapper";
 
 ## Knowledge Base
 
-When `knowledgeBaseEnabled={true}`, a 📎 button appears in the chat window. Users can upload a PDF or DOCX which gets chunked, embedded, and stored in ChromaDB. The bot answers questions from that document automatically.
+When `knowledgeBaseEnabled={true}`, a 📎 button appears in the chat window. Users can upload a PDF or DOCX which gets chunked, embedded, and stored in Pinecone. The bot answers questions from that document automatically.
 
 Use a unique `collectionId` per app so documents stay isolated:
 
@@ -326,7 +328,7 @@ When `enableVoice={true}`:
 | Widget     | React + TypeScript + Tailwind v4 | Free                    |
 | LLM        | Groq (Llama 3.3 70B)             | Free                    |
 | Embeddings | sentence-transformers (local)    | Free                    |
-| Vector DB  | ChromaDB                         | Free                    |
+| Vector DB  | Pinecone                         | Free                    |
 | Voice      | Web Speech API                   | Free (browser built-in) |
 
 ---
