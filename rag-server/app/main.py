@@ -2,8 +2,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.services.rag_service import ingest_text, is_collection_empty
-import os
 import asyncio
+import os
 
 KNOWLEDGE_FILE = os.path.join(os.path.dirname(__file__), "..", "chatkit_knowledge.md")
 COLLECTION_ID = "default"
@@ -18,11 +18,12 @@ def _ingest_knowledge_base():
         except Exception as e:
             print(f"⚠️ Failed to ingest knowledge base: {e}")
     else:
-        print("✅ Knowledge base already loaded, skipping")
+        print("✅ Knowledge base already loaded in Pinecone, skipping")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    asyncio.get_event_loop().run_in_executor(None, _ingest_knowledge_base)
+    loop = asyncio.get_event_loop()
+    loop.run_in_executor(None, _ingest_knowledge_base)
     yield
 
 app = FastAPI(title="ChatBot RAG Server", lifespan=lifespan)

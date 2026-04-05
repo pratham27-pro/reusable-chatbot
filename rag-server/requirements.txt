@@ -2,10 +2,13 @@ fastapi
 uvicorn
 python-multipart
 langchain
+langchain-chroma
 langchain-community
 langchain-groq
+langchain-pinecone
 langchain-text-splitters
 chromadb
+pinecone
 pypdf
 python-docx
 python-dotenv

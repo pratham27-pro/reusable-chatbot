@@ -3,8 +3,9 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     groq_api_key: SecretStr
-    chroma_persist_dir: str = "./chroma_db"
-    chroma_in_memory: bool = False
+    pinecone_api_key: SecretStr
+    pinecone_index_name: str = "reusbale-chatbot"
+    pinecone_host: str = ""          # ← the host URL Pinecone gave you
 
     class Config:
         env_file = ".env"
