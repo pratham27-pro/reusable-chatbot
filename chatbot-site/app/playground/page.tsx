@@ -30,6 +30,8 @@ export default function PlaygroundPage() {
         floatPosition="bottom-right"
         knowledgeBaseEnabled={true}
         collectionId="my-chatkit-docs"
+        persistHistory={false}
+        enableVoice={true}
       />
 
       {/* Background layers — z-index 0, never fights navbar z-50 */}

@@ -20,6 +20,7 @@ interface ChatWindowProps {
   collectionId?: string;
   onClose: () => void;
   persistHistory?: boolean;
+  enableVoice?: boolean;
 }
 
 export function ChatWindow({
@@ -36,6 +37,7 @@ export function ChatWindow({
   collectionId = "default",
   onClose,
   persistHistory = true,
+  enableVoice = false,
 }: ChatWindowProps) {
   const { messages, isLoading, sendMessage, clearMessages } = useChat(
     apiEndpoint,
@@ -47,6 +49,9 @@ export function ChatWindow({
   );
   const bottomRef = useRef<HTMLDivElement>(null);
   const dark = theme === "dark";
+
+  const lastBotMessage =
+    [...messages].reverse().find((m) => m.role === "bot")?.content ?? "";
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -126,6 +131,8 @@ export function ChatWindow({
         placeholder={placeholder}
         buttonColor={buttonColor}
         theme={theme}
+        enableVoice={enableVoice}
+        lastBotMessage={lastBotMessage}
       />
     </div>
   );

@@ -18,6 +18,7 @@ export function ChatBot({
   knowledgeBaseEnabled = false,
   collectionId = "default",
   floatPosition = "bottom-right",
+  enableVoice = false,
 }: ChatBotProps) {
   if (!apiEndpoint && !apiKey) {
     console.error(
@@ -109,6 +110,7 @@ export function ChatBot({
               knowledgeBaseEnabled={knowledgeBaseEnabled}
               collectionId={collectionId}
               onClose={() => setIsOpen(false)}
+              enableVoice={enableVoice}
             />
           </div>
         )}

@@ -1,20 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Message } from "../types";
 
-const MAX_STORED_MESSAGES = 100; // don't let localStorage grow forever
+const MAX_STORED_MESSAGES = 100;
 
-function getStorageKey(apiEndpoint: string) {
-  // unique key per chatbot instance (in case user has multiple bots)
-  return `chatbot-rag-history-${btoa(apiEndpoint).slice(0, 16)}`;
+function getStorageKey(endpoint: string) {
+  return `chatbot-rag-history-${btoa(endpoint).slice(0, 16)}`;
 }
 
-function loadMessages(apiEndpoint: string): Message[] {
+function loadMessages(endpoint: string): Message[] {
   try {
-    const raw = localStorage.getItem(getStorageKey(apiEndpoint));
+    const raw = localStorage.getItem(getStorageKey(endpoint));
     if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    // Restore Date objects — JSON.parse gives strings
-    return parsed.map((m: Message) => ({
+    return JSON.parse(raw).map((m: Message) => ({
       ...m,
       timestamp: new Date(m.timestamp),
     }));
@@ -23,14 +20,19 @@ function loadMessages(apiEndpoint: string): Message[] {
   }
 }
 
-function saveMessages(apiEndpoint: string, messages: Message[]) {
+function saveMessages(endpoint: string, messages: Message[]) {
   try {
-    // Only keep last N messages to avoid storage bloat
-    const toStore = messages.slice(-MAX_STORED_MESSAGES);
-    localStorage.setItem(getStorageKey(apiEndpoint), JSON.stringify(toStore));
-  } catch {
-    // localStorage can throw if storage is full — fail silently
-  }
+    localStorage.setItem(
+      getStorageKey(endpoint),
+      JSON.stringify(messages.slice(-MAX_STORED_MESSAGES)),
+    );
+  } catch {}
+}
+
+function clearStorage(endpoint: string) {
+  try {
+    localStorage.removeItem(getStorageKey(endpoint));
+  } catch {}
 }
 
 export function useChat(
@@ -41,16 +43,33 @@ export function useChat(
   collectionId = "default",
   apiKey?: string,
 ) {
-  const [messages, setMessages] = useState<Message[]>(() =>
-    persistHistory && apiEndpoint ? loadMessages(apiEndpoint) : [],
-  );
+  // const storageKey = apiEndpoint ?? apiKey ?? "default";
+
+  const [messages, setMessages] = useState<Message[]>(() => {
+    // Only load from storage if persistHistory is true at mount time
+    if (persistHistory && apiEndpoint) {
+      return loadMessages(apiEndpoint);
+    }
+    return [];
+  });
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
-  // Persist to localStorage whenever messages change
+  // When persistHistory switches to false, immediately wipe stored history
   useEffect(() => {
-    if (persistHistory && apiEndpoint) saveMessages(apiEndpoint, messages);
+    if (!persistHistory && apiEndpoint) {
+      clearStorage(apiEndpoint);
+    }
+  }, [persistHistory, apiEndpoint]);
+
+  // Save on every message change — only if persistHistory is true
+  useEffect(() => {
+    if (!persistHistory || !apiEndpoint) return;
+    // Don't save empty array — avoids wiping storage on initial render
+    if (messages.length === 0) return;
+    saveMessages(apiEndpoint, messages);
   }, [messages, apiEndpoint, persistHistory]);
 
   const sendMessage = useCallback(
@@ -63,7 +82,6 @@ export function useChat(
         content,
         timestamp: new Date(),
       };
-
       const botMsgId = crypto.randomUUID();
 
       setMessages((prev) => [
@@ -72,7 +90,7 @@ export function useChat(
         { id: botMsgId, role: "bot", content: "", timestamp: new Date() },
       ]);
       setIsLoading(true);
-      // ── Guard: must have one or the other ──
+
       if (!apiKey && !apiEndpoint) {
         setMessages((prev) =>
           prev.map((m) =>
@@ -80,7 +98,7 @@ export function useChat(
               ? {
                   ...m,
                   content:
-                    "⚠️ Configuration error: please provide either `apiKey` or `apiEndpoint` to use this chatbot.",
+                    "⚠️ Configuration error: provide either `apiKey` or `apiEndpoint`.",
                 }
               : m,
           ),
@@ -92,7 +110,7 @@ export function useChat(
       abortRef.current = new AbortController();
 
       try {
-        // ── Path 1: Direct Groq (apiKey provided, no backend needed) ──
+        // ── Path 1: Direct Groq ──────────────────────────────────────
         if (apiKey) {
           const res = await fetch(
             "https://api.groq.com/openai/v1/chat/completions",
@@ -105,6 +123,7 @@ export function useChat(
               signal: abortRef.current.signal,
               body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
+                stream: true,
                 messages: [
                   {
                     role: "system",
@@ -116,29 +135,25 @@ export function useChat(
                   })),
                   { role: "user", content },
                 ],
-                stream: true,
               }),
             },
           );
 
           if (!res.ok) throw new Error(`Groq responded with ${res.status}`);
 
-          // Parse SSE stream from Groq
           const reader = res.body?.getReader();
           const decoder = new TextDecoder();
-
           if (reader) {
             while (true) {
               const { done, value } = await reader.read();
               if (done) break;
               const text = decoder.decode(value, { stream: true });
-              // Groq SSE lines: "data: {...}\n"
               for (const line of text.split("\n")) {
                 if (!line.startsWith("data: ") || line === "data: [DONE]")
                   continue;
                 try {
-                  const json = JSON.parse(line.replace("data: ", ""));
-                  const token = json.choices?.[0]?.delta?.content;
+                  const token = JSON.parse(line.replace("data: ", ""))
+                    .choices?.[0]?.delta?.content;
                   if (token) {
                     setMessages((prev) =>
                       prev.map((m) =>
@@ -148,17 +163,14 @@ export function useChat(
                       ),
                     );
                   }
-                } catch {
-                  /* skip malformed chunks */
-                }
+                } catch {}
               }
             }
           }
-
-          return; // don't fall through to apiEndpoint path
+          return;
         }
 
-        // ── Path 2: RAG server (existing logic) ──
+        // ── Path 2: RAG server ───────────────────────────────────────
         const res = await fetch(`${apiEndpoint}/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -225,7 +237,7 @@ export function useChat(
 
   const clearMessages = useCallback(() => {
     setMessages([]);
-    if (apiEndpoint) localStorage.removeItem(getStorageKey(apiEndpoint)); // also wipe from storage
+    if (apiEndpoint) clearStorage(apiEndpoint);
   }, [apiEndpoint]);
 
   const stopGeneration = () => abortRef.current?.abort();

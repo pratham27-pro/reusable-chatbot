@@ -1,22 +1,47 @@
 import { useCallback, useRef, useState } from "react";
 
-type SpeechRecognitionConstructor = new () => SpeechRecognition;
+// ── Fix: declare the missing global types ────────────────────────────────────
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+}
+
+interface ISpeechRecognition extends EventTarget {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  continuous: boolean;
+  onresult: ((e: SpeechRecognitionEvent) => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+  start(): void;
+  stop(): void;
+}
+
+interface ISpeechRecognitionConstructor {
+  new (): ISpeechRecognition;
+}
+
+function getSpeechRecognition(): ISpeechRecognitionConstructor | undefined {
+  if (typeof window === "undefined") return undefined;
+  return (
+    (window as unknown as { SpeechRecognition?: ISpeechRecognitionConstructor })
+      .SpeechRecognition ??
+    (
+      window as unknown as {
+        webkitSpeechRecognition?: ISpeechRecognitionConstructor;
+      }
+    ).webkitSpeechRecognition
+  );
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 export function useVoice(onTranscript: (text: string) => void) {
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<ISpeechRecognition | null>(null);
 
-  // Voice INPUT — mic to text
   const startListening = useCallback(() => {
-    const SpeechRecognitionAPI: SpeechRecognitionConstructor | undefined =
-      window.SpeechRecognition ||
-      (
-        window as Window & {
-          webkitSpeechRecognition?: SpeechRecognitionConstructor;
-        }
-      ).webkitSpeechRecognition;
-
+    const SpeechRecognitionAPI = getSpeechRecognition();
     if (!SpeechRecognitionAPI) {
       alert("Voice input not supported in this browser. Use Chrome.");
       return;
@@ -45,7 +70,6 @@ export function useVoice(onTranscript: (text: string) => void) {
     setIsListening(false);
   }, []);
 
-  // Voice OUTPUT — text to speech
   const speak = useCallback((text: string) => {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
@@ -54,6 +78,7 @@ export function useVoice(onTranscript: (text: string) => void) {
     utterance.pitch = 1;
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
     window.speechSynthesis.speak(utterance);
   }, []);
 
