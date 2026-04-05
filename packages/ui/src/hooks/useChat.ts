@@ -15,7 +15,11 @@ function loadMessages(endpoint: string): Message[] {
       ...m,
       timestamp: new Date(m.timestamp),
     }));
-  } catch {
+  } catch (err) {
+    console.warn("[useChat] Failed to load messages from localStorage", {
+      endpoint,
+      error: err,
+    });
     return [];
   }
 }
@@ -26,13 +30,24 @@ function saveMessages(endpoint: string, messages: Message[]) {
       getStorageKey(endpoint),
       JSON.stringify(messages.slice(-MAX_STORED_MESSAGES)),
     );
-  } catch {}
+  } catch (err) {
+    console.warn("[useChat] Failed to save messages to localStorage", {
+      endpoint,
+      messageCount: messages.length,
+      error: err,
+    });
+  }
 }
 
 function clearStorage(endpoint: string) {
   try {
     localStorage.removeItem(getStorageKey(endpoint));
-  } catch {}
+  } catch (err) {
+    console.warn("[useChat] Failed to clear chat history from localStorage", {
+      endpoint,
+      error: err,
+    });
+  }
 }
 
 export function useChat(
@@ -163,7 +178,37 @@ export function useChat(
                       ),
                     );
                   }
-                } catch {}
+                } catch (err) {
+                  if ((err as Error).name === "AbortError") {
+                    console.debug("[useChat] Request aborted by user", {
+                      apiEndpoint,
+                      hasApiKey: !!apiKey,
+                    });
+                    return;
+                  }
+
+                  const errorMessage =
+                    err instanceof Error ? err.message : "Unknown error";
+
+                  console.error("[useChat] sendMessage failed", {
+                    error: err,
+                    message: content,
+                    apiEndpoint,
+                    hasApiKey: !!apiKey,
+                    knowledgeBaseEnabled,
+                    collectionId,
+                  });
+
+                  setError(errorMessage);
+
+                  setMessages((prev) =>
+                    prev.map((m) =>
+                      m.id === botMsgId
+                        ? { ...m, content: `⚠️ ${errorMessage}` }
+                        : m,
+                    ),
+                  );
+                }
               }
             }
           }
