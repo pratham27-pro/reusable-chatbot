@@ -79,14 +79,21 @@ const props = [
     type: "boolean",
     required: false,
     default: "false",
-    desc: "Show PDF/DOCX upload button; sends documents to your RAG server",
+    desc: "Show a 📎 upload button in the chat window for runtime document uploads",
+  },
+  {
+    name: "knowledgeBaseUrl",
+    type: "string",
+    required: false,
+    default: "—",
+    desc: "Public URL to a markdown/text file (e.g. raw GitHub URL). Server fetches and ingests it automatically on first use. Coming soon.",
   },
   {
     name: "collectionId",
     type: "string",
     required: false,
     default: '"default"',
-    desc: "Unique identifier for your knowledge base. Use a different ID per app to keep documents isolated on the shared RAG server",
+    desc: "Unique namespace for your knowledge base in Pinecone. Use a different ID per app to keep documents isolated from other users.",
   },
   {
     name: "enableVoice",

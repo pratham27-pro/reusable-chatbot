@@ -126,7 +126,6 @@ export default function DocsPage() {
           It can be any framework — Node.js, FastAPI, Django, anything.
         </p>
 
-        {/* Route contract */}
         <h3 className="text-base font-semibold text-white mb-3">
           Required Routes
         </h3>
@@ -184,12 +183,11 @@ app.post("/chat", async (req, res) => {
 app.post("/upload-doc", upload.single("file"), async (req, res) => {
   const { collection_id } = req.body;
   const file = req.file;
-  // → process and store in your vector DB
+  // → chunk, embed and store in your vector DB under collection_id
   res.json({ message: "Ingested successfully", collection_id });
 });`}
         </ShikiBlock>
 
-        {/* .env */}
         <h3 className="text-base font-semibold text-white mb-3 mt-8">
           Environment Variables
         </h3>
@@ -198,7 +196,6 @@ app.post("/upload-doc", upload.single("file"), async (req, res) => {
 GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxx`}
         </ShikiBlock>
 
-        {/* Info box */}
         <div className="mt-4 rounded-xl border border-blue-400/20 bg-blue-400/5 px-4 py-3 text-xs text-blue-300/80 leading-relaxed">
           💡 The <code className="bg-blue-400/10 px-1 rounded">upload-doc</code>{" "}
           route is only required if you use{" "}
@@ -263,13 +260,22 @@ NEXT_PUBLIC_GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxx`}
           Knowledge Base
         </h2>
         <p className="text-gray-400 mb-6 text-sm leading-relaxed">
+          ChatKit supports two ways to give your chatbot a knowledge base —
+          runtime uploads via the chat UI, or pre-ingesting a document at deploy
+          time so it's always available without any user action.
+        </p>
+
+        {/* Method 1 */}
+        <h3 className="text-base font-semibold text-white mb-3">
+          Method 1 — Upload via Chat UI
+        </h3>
+        <p className="text-gray-400 mb-4 text-sm leading-relaxed">
           Enable{" "}
           <code className="text-[#00e5a0] bg-[#00e5a0]/10 px-1.5 py-0.5 rounded text-xs">
             knowledgeBaseEnabled
           </code>{" "}
-          to show a 📎 upload button inside the chat window. Users can upload
-          PDF or DOCX files and the chatbot will answer questions from them
-          automatically. Use a unique{" "}
+          to show a 📎 button inside the chat window. Users upload a PDF or DOCX
+          and the bot answers from it immediately. Use a unique{" "}
           <code className="text-[#00e5a0] bg-[#00e5a0]/10 px-1.5 py-0.5 rounded text-xs">
             collectionId
           </code>{" "}
@@ -277,23 +283,93 @@ NEXT_PUBLIC_GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxx`}
           server.
         </p>
 
-        <ShikiBlock lang="tsx" label="Knowledge Base Setup">
-          {`// 1. Enable the upload UI + set a unique collection ID
-<ChatBot
+        <ShikiBlock lang="tsx" label="Runtime Upload">
+          {`<ChatBot
   apiEndpoint="https://reusable-chatbot.onrender.com"
   knowledgeBaseEnabled={true}
   collectionId="acme-corp-docs"
   systemPrompt="Answer only from the uploaded documents."
-/>
+/>`}
+        </ShikiBlock>
 
-// 2. User clicks 📎 inside the chat and uploads their PDF/DOCX
-// 3. Chatbot immediately answers from that document — done!`}
+        <div className="mt-3 mb-8 rounded-xl border border-blue-400/20 bg-blue-400/5 px-4 py-3 text-xs text-blue-300/80 leading-relaxed">
+          💡 <strong className="text-blue-300">Demo tip:</strong> Upload your
+          document, then click the clear button in the chat header to wipe the
+          conversation history. The document stays ingested in the knowledge
+          base — users get a clean chat that already knows your content.
+        </div>
+
+        {/* Method 2 */}
+        <h3 className="text-base font-semibold text-white mb-3">
+          Method 2 — Pre-ingest via curl (silent knowledge base)
+        </h3>
+        <p className="text-gray-400 mb-4 text-sm leading-relaxed">
+          Upload your document once to the server before your users ever open
+          the chat. Set{" "}
+          <code className="text-[#00e5a0] bg-[#00e5a0]/10 px-1.5 py-0.5 rounded text-xs">
+            knowledgeBaseEnabled={"{false}"}
+          </code>{" "}
+          — no upload UI is shown. The chatbot silently answers from your
+          pre-loaded knowledge base. Since the document is stored in Pinecone it
+          persists forever and survives server restarts.
+        </p>
+
+        <ShikiBlock
+          lang="bash"
+          label="One-time upload (run this once from your terminal)"
+        >
+          {`curl -X POST https://reusable-chatbot.onrender.com/upload-doc \\
+  -F "file=@./docs/your-knowledge.pdf" \\
+  -F "collection_id=acme-corp-docs"`}
+        </ShikiBlock>
+
+        <ShikiBlock
+          lang="tsx"
+          label="Chatbot config after pre-ingesting"
+          className="mt-4"
+        >
+          {`// knowledgeBaseEnabled is false — no upload UI shown
+// The bot silently uses the pre-ingested knowledge base
+<ChatBot
+  apiEndpoint="https://reusable-chatbot.onrender.com"
+  knowledgeBaseEnabled={false}
+  collectionId="acme-corp-docs"
+  systemPrompt="You are a support assistant for Acme Corp. Answer only from the provided documentation."
+/>`}
+        </ShikiBlock>
+
+        {/* Method 3 */}
+        <h3 className="text-base font-semibold text-white mb-3 mt-8">
+          Method 3 — Auto-ingest from a public URL{" "}
+          <span className="text-[10px] font-mono text-[#00e5a0]/60 bg-[#00e5a0]/10 px-2 py-0.5 rounded-full ml-1 align-middle">
+            coming soon
+          </span>
+        </h3>
+        <p className="text-gray-400 mb-4 text-sm leading-relaxed">
+          Pass a public URL (e.g. a raw GitHub file) as{" "}
+          <code className="text-[#00e5a0] bg-[#00e5a0]/10 px-1.5 py-0.5 rounded text-xs">
+            knowledgeBaseUrl
+          </code>
+          . The server fetches and ingests it automatically on first use — no
+          manual curl, no upload UI. Once stored in Pinecone it's never
+          re-fetched.
+        </p>
+
+        <ShikiBlock lang="tsx" label="Auto-ingest (coming soon)">
+          {`<ChatBot
+  apiEndpoint="https://reusable-chatbot.onrender.com"
+  knowledgeBaseUrl="https://raw.githubusercontent.com/your-org/repo/main/docs/knowledge.md"
+  collectionId="acme-corp-docs"
+  systemPrompt="Answer only from the provided documentation."
+/>`}
         </ShikiBlock>
 
         <div className="mt-4 rounded-xl border border-yellow-400/20 bg-yellow-400/5 px-4 py-3 text-xs text-yellow-300/80 leading-relaxed">
-          ⚠️ Documents uploaded to the shared server are stored in-memory and
-          will be cleared on server restart. For persistent storage, self-host
-          the RAG server with a volume-mounted Chroma DB.
+          ⚠️ The shared server stores documents in{" "}
+          <strong className="text-yellow-300">Pinecone</strong> — they persist
+          across server restarts. Always use a unique{" "}
+          <code className="bg-yellow-400/10 px-1 rounded">collectionId</code> so
+          your documents stay isolated from other users. Max file size is 2MB.
         </div>
       </section>
     </div>
