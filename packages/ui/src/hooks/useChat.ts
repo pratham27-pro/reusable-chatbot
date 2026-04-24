@@ -159,16 +159,25 @@ export function useChat(
           const reader = res.body?.getReader();
           const decoder = new TextDecoder();
           if (reader) {
+            let buffer = "";
+
             while (true) {
               const { done, value } = await reader.read();
               if (done) break;
-              const text = decoder.decode(value, { stream: true });
-              for (const line of text.split("\n")) {
-                if (!line.startsWith("data: ") || line === "data: [DONE]")
+
+              buffer += decoder.decode(value, { stream: true });
+
+              const lines = buffer.split("\n");
+              buffer = lines.pop() ?? "";
+
+              for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed.startsWith("data: ") || trimmed === "data: [DONE]")
                   continue;
+
                 try {
-                  const token = JSON.parse(line.replace("data: ", ""))
-                    .choices?.[0]?.delta?.content;
+                  const token = JSON.parse(trimmed.slice(6)).choices?.[0]?.delta // 👈 Use slice(6) instead of replace()
+                    ?.content;
                   if (token) {
                     setMessages((prev) =>
                       prev.map((m) =>
@@ -179,35 +188,10 @@ export function useChat(
                     );
                   }
                 } catch (err) {
-                  if ((err as Error).name === "AbortError") {
-                    console.debug("[useChat] Request aborted by user", {
-                      apiEndpoint,
-                      hasApiKey: !!apiKey,
-                    });
-                    return;
-                  }
-
-                  const errorMessage =
-                    err instanceof Error ? err.message : "Unknown error";
-
-                  console.error("[useChat] sendMessage failed", {
-                    error: err,
-                    message: content,
-                    apiEndpoint,
-                    hasApiKey: !!apiKey,
-                    knowledgeBaseEnabled,
-                    collectionId,
+                  console.warn("[useChat] Failed to parse SSE line", {
+                    line: trimmed,
+                    err,
                   });
-
-                  setError(errorMessage);
-
-                  setMessages((prev) =>
-                    prev.map((m) =>
-                      m.id === botMsgId
-                        ? { ...m, content: `⚠️ ${errorMessage}` }
-                        : m,
-                    ),
-                  );
                 }
               }
             }

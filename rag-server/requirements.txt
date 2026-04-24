@@ -9,7 +9,5 @@ langchain-pinecone
 langchain-text-splitters
 chromadb
 pinecone
-pypdf
-python-docx
 python-dotenv
 fastembed
