@@ -171,13 +171,14 @@ app.post("/chat", async (req, res) => {
 });`}
         </ShikiBlock>
 
+        {/* ── CHANGED: file type updated to .txt ── */}
         <ShikiBlock
           lang="ts"
           label="POST /upload-doc — only needed if knowledgeBaseEnabled={true}"
           className="mb-4"
         >
           {`// ChatKit sends: multipart/form-data
-// Fields: file (PDF or DOCX), collection_id (string)
+// Fields: file (.txt only), collection_id (string)
 // Expected response: { message: string, collection_id: string }
 
 app.post("/upload-doc", upload.single("file"), async (req, res) => {
@@ -269,13 +270,17 @@ NEXT_PUBLIC_GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxx`}
         <h3 className="text-base font-semibold text-white mb-3">
           Method 1 — Upload via Chat UI
         </h3>
+        {/* ── CHANGED: PDF/DOCX → .txt ── */}
         <p className="text-gray-400 mb-4 text-sm leading-relaxed">
           Enable{" "}
           <code className="text-[#00e5a0] bg-[#00e5a0]/10 px-1.5 py-0.5 rounded text-xs">
             knowledgeBaseEnabled
           </code>{" "}
-          to show a 📎 button inside the chat window. Users upload a PDF or DOCX
-          and the bot answers from it immediately. Use a unique{" "}
+          to show a 📄 upload button inside the chat window. Users upload a{" "}
+          <code className="text-[#00e5a0] bg-[#00e5a0]/10 px-1.5 py-0.5 rounded text-xs">
+            .txt
+          </code>{" "}
+          file and the bot answers from it immediately. Use a unique{" "}
           <code className="text-[#00e5a0] bg-[#00e5a0]/10 px-1.5 py-0.5 rounded text-xs">
             collectionId
           </code>{" "}
@@ -292,11 +297,13 @@ NEXT_PUBLIC_GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxx`}
 />`}
         </ShikiBlock>
 
+        {/* ── CHANGED: updated tip to mention .txt ── */}
         <div className="mt-3 mb-8 rounded-xl border border-blue-400/20 bg-blue-400/5 px-4 py-3 text-xs text-blue-300/80 leading-relaxed">
-          💡 <strong className="text-blue-300">Demo tip:</strong> Upload your
-          document, then click the clear button in the chat header to wipe the
-          conversation history. The document stays ingested in the knowledge
-          base — users get a clean chat that already knows your content.
+          💡 <strong className="text-blue-300">Demo tip:</strong> Export your
+          content as a <code className="bg-blue-400/10 px-1 rounded">.txt</code>{" "}
+          file, upload it, then click the clear button in the chat header to
+          wipe the conversation history. The document stays ingested in Pinecone
+          — users get a clean chat that already knows your content.
         </div>
 
         {/* Method 2 */}
@@ -314,12 +321,13 @@ NEXT_PUBLIC_GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxx`}
           persists forever and survives server restarts.
         </p>
 
+        {/* ── CHANGED: .pdf → .txt in curl example ── */}
         <ShikiBlock
           lang="bash"
           label="One-time upload (run this once from your terminal)"
         >
           {`curl -X POST https://reusable-chatbot.onrender.com/upload-doc \\
-  -F "file=@./docs/your-knowledge.pdf" \\
+  -F "file=@./docs/your-knowledge.txt" \\
   -F "collection_id=acme-corp-docs"`}
         </ShikiBlock>
 
@@ -369,7 +377,9 @@ NEXT_PUBLIC_GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxx`}
           <strong className="text-yellow-300">Pinecone</strong> — they persist
           across server restarts. Always use a unique{" "}
           <code className="bg-yellow-400/10 px-1 rounded">collectionId</code> so
-          your documents stay isolated from other users. Max file size is 2MB.
+          your documents stay isolated from other users. Only{" "}
+          <code className="bg-yellow-400/10 px-1 rounded">.txt</code> files are
+          supported. Max file size is 2MB.
         </div>
       </section>
     </div>
