@@ -2,7 +2,7 @@
 
 ## What is ChatKit?
 
-ChatKit (`@pratham_jain/chatkit`) is a free, open-source npm package that lets developers add a fully customizable AI-powered floating chatbot to any React application in minutes. It is built with Vite, TypeScript, and Tailwind CSS. The LLM is powered by Groq. It supports RAG (Retrieval-Augmented Generation) via a Node.js + LangChain.js + Chroma backend, enabling the chatbot to answer questions from your own PDF or Word documents.
+ChatKit (`@pratham_jain/chatkit`) is a free, open-source npm package that lets developers add a fully customizable AI-powered floating chatbot to any React application in minutes. It is built with Vite, TypeScript, and Tailwind CSS. The LLM is powered by Groq. It supports RAG (Retrieval-Augmented Generation) via a Node.js + LangChain.js + Chroma backend, enabling the chatbot to answer questions from your own document.
 
 ## Site Pages
 
@@ -113,7 +113,7 @@ function App() {
 
 ## RAG Support (Custom Knowledge Base)
 
-ChatKit supports RAG via a companion Node.js server using LangChain.js and Chroma. This lets the chatbot answer questions from your own PDF or Word documents.
+ChatKit supports RAG via a companion Node.js server using LangChain.js and Chroma. This lets the chatbot answer questions from your own document.
 
 Setup steps:
 

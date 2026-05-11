@@ -95,7 +95,7 @@ export function HeroSection() {
               className="text-lg mb-10 leading-relaxed max-w-md"
               style={{ color: "#7a8aaa" }}
             >
-              RAG-powered. PDF knowledge base. Voice support. One prop.
+              RAG-powered. Text knowledge base. Voice support. One prop.
               <br />
               Drop it in. It just works.
             </motion.p>

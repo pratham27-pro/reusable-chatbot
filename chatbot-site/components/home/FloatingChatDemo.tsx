@@ -1,12 +1,12 @@
 "use client";
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
-import { Mic, Send, X, MessageCircle, Minimize2 } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { MessageCircle, Mic, Minimize2, Send, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const conversation = [
   {
     role: "user" as const,
-    text: "What does the PDF say about onboarding?",
+    text: "What does the document say about onboarding?",
     delay: 0,
   },
   {
@@ -41,7 +41,11 @@ function TypingDots() {
   );
 }
 
-export function FloatingChatDemo({ standalone = false }: { standalone?: boolean }) {
+export function FloatingChatDemo({
+  standalone = false,
+}: {
+  standalone?: boolean;
+}) {
   const [messages, setMessages] = useState<typeof conversation>([]);
   const [typing, setTyping] = useState(false);
   const [open, setOpen] = useState(true);
@@ -66,7 +70,9 @@ export function FloatingChatDemo({ standalone = false }: { standalone?: boolean 
           setMsgIndex((i) => i + 1);
         }
       },
-      msgIndex === 0 ? 600 : msg.delay - (conversation[msgIndex - 1]?.delay ?? 0),
+      msgIndex === 0
+        ? 600
+        : msg.delay - (conversation[msgIndex - 1]?.delay ?? 0),
     );
     return () => clearTimeout(timer);
   }, [msgIndex, open]);
@@ -80,7 +86,10 @@ export function FloatingChatDemo({ standalone = false }: { standalone?: boolean 
   if (!open) {
     return (
       <motion.button
-        onClick={() => { setOpen(true); reset(); }}
+        onClick={() => {
+          setOpen(true);
+          reset();
+        }}
         className="float-anim w-14 h-14 rounded-full flex items-center justify-center shadow-2xl cursor-pointer"
         style={{
           background: "linear-gradient(135deg, #00e5a0, #00b37d)",
@@ -122,10 +131,15 @@ export function FloatingChatDemo({ standalone = false }: { standalone?: boolean 
             AI
           </div>
           <div>
-            <p className="text-white text-sm font-semibold leading-none">Assistant</p>
-            <p className="text-[10px] mt-0.5 flex items-center gap-1" style={{ color: "#00e5a0" }}>
+            <p className="text-white text-sm font-semibold leading-none">
+              Assistant
+            </p>
+            <p
+              className="text-[10px] mt-0.5 flex items-center gap-1"
+              style={{ color: "#00e5a0" }}
+            >
               <span className="w-1.5 h-1.5 rounded-full bg-[#00e5a0] inline-block animate-pulse" />
-              Online · PDF loaded
+              Online · Files loaded
             </p>
           </div>
         </div>
@@ -137,7 +151,10 @@ export function FloatingChatDemo({ standalone = false }: { standalone?: boolean 
             <Minimize2 size={14} />
           </button>
           <button
-            onClick={() => { setOpen(false); reset(); }}
+            onClick={() => {
+              setOpen(false);
+              reset();
+            }}
             className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-[#7a8aaa] hover:text-white"
           >
             <X size={14} />
@@ -201,10 +218,16 @@ export function FloatingChatDemo({ standalone = false }: { standalone?: boolean 
       </div>
 
       {/* Input */}
-      <div className="px-4 py-3 border-t" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
+      <div
+        className="px-4 py-3 border-t"
+        style={{ borderColor: "rgba(255,255,255,0.07)" }}
+      >
         <div
           className="flex items-center gap-2 rounded-xl px-3 py-2.5"
-          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+          style={{
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.08)",
+          }}
         >
           <span className="flex-1 text-sm" style={{ color: "#3d4f6b" }}>
             Ask anything...

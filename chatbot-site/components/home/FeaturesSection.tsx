@@ -1,7 +1,7 @@
 "use client";
 import { motion, useInView } from "framer-motion";
+import { FileText, Github, Mic, Moon, Move, Zap } from "lucide-react";
 import { useRef } from "react";
-import { Zap, FileText, Mic, Moon, Puzzle, Github, Move, Code2 } from "lucide-react";
 
 const features = [
   {
@@ -15,8 +15,8 @@ const features = [
   },
   {
     icon: FileText,
-    title: "PDF knowledge base",
-    desc: "Upload docs. Bot answers from them. Powered by ChromaDB + embeddings.",
+    title: "Text file knowledge base",
+    desc: "Upload text files. Bot answers from them. Powered by ChromaDB + embeddings.",
     accent: "#6366f1",
     bg: "rgba(99,102,241,0.08)",
     border: "rgba(99,102,241,0.15)",
@@ -75,11 +75,18 @@ export function FeaturesSection() {
         >
           <span
             className="text-xs font-mono font-semibold tracking-widest uppercase px-3 py-1 rounded-full"
-            style={{ color: "#8b5cf6", background: "rgba(139,92,246,0.08)", border: "1px solid rgba(139,92,246,0.15)" }}
+            style={{
+              color: "#8b5cf6",
+              background: "rgba(139,92,246,0.08)",
+              border: "1px solid rgba(139,92,246,0.15)",
+            }}
           >
             Features
           </span>
-          <h2 className="text-4xl lg:text-5xl font-bold mt-4" style={{ color: "#f0f4ff" }}>
+          <h2
+            className="text-4xl lg:text-5xl font-bold mt-4"
+            style={{ color: "#f0f4ff" }}
+          >
             Everything included.{" "}
             <span style={{ color: "#7a8aaa" }}>Nothing extra.</span>
           </h2>
@@ -111,10 +118,16 @@ export function FeaturesSection() {
                 >
                   <Icon size={20} style={{ color: feature.accent }} />
                 </div>
-                <h3 className="font-bold text-base mb-2" style={{ color: "#f0f4ff" }}>
+                <h3
+                  className="font-bold text-base mb-2"
+                  style={{ color: "#f0f4ff" }}
+                >
                   {feature.title}
                 </h3>
-                <p className="text-sm leading-relaxed" style={{ color: "#7a8aaa" }}>
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: "#7a8aaa" }}
+                >
                   {feature.desc}
                 </p>
               </motion.div>
@@ -129,7 +142,14 @@ export function FeaturesSection() {
           transition={{ delay: 0.8 }}
           className="flex flex-wrap items-center justify-center gap-3 mt-12"
         >
-          {["React", "FastAPI", "Groq", "ChromaDB", "TypeScript", "Web Speech API"].map((tech) => (
+          {[
+            "React",
+            "FastAPI",
+            "Groq",
+            "ChromaDB",
+            "TypeScript",
+            "Web Speech API",
+          ].map((tech) => (
             <span
               key={tech}
               className="text-xs font-mono px-3 py-1.5 rounded-full"

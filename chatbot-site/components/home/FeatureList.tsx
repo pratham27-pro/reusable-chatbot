@@ -9,7 +9,7 @@ const features = [
   {
     icon: FileText,
     title: "RAG Knowledge Base",
-    desc: "Upload PDFs and Word docs — bot answers from them.",
+    desc: "Upload text files — bot answers from them.",
   },
   {
     icon: Mic,

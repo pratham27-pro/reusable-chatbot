@@ -11,7 +11,7 @@ A plug-and-play floating RAG chatbot widget for React. Drop it into any React, N
 ## Features
 
 - 💬 **Floating draggable chat button** — users can move it anywhere on screen
-- 📄 **RAG knowledge base** — upload PDFs and Word docs, bot answers from them
+- 📄 **RAG knowledge base** — upload text files, bot answers from them
 - 🎙️ **Voice support** — speak to the bot and hear it speak back (Web Speech API)
 - 🌙 **Light & dark themes** — one prop switch
 - 💾 **Persistent chat history** — localStorage, survives page refresh
@@ -99,7 +99,7 @@ function App() {
 | `systemPrompt`         | `string`                          | `"You are a helpful assistant."` | Instructions sent to the LLM on every request                                            |
 | `placeholder`          | `string`                          | `"Type a message..."`            | Input field placeholder text                                                             |
 | `floatPosition`        | `"bottom-right" \| "bottom-left"` | `"bottom-right"`                 | Initial position of the FAB button                                                       |
-| `knowledgeBaseEnabled` | `boolean`                         | `false`                          | Show PDF/DOCX upload button inside the chat                                              |
+| `knowledgeBaseEnabled` | `boolean`                         | `false`                          | Show text file upload button inside the chat                                             |
 | `collectionId`         | `string`                          | `"default"`                      | Unique ID for your knowledge base. Use a different ID per app to keep documents isolated |
 | `enableVoice`          | `boolean`                         | `false`                          | Enable mic input and text-to-speech output                                               |
 | `persistHistory`       | `boolean`                         | `true`                           | Save and restore chat history via localStorage                                           |
@@ -178,7 +178,7 @@ app.post("/chat", async (req, res) => {
 
 Only required if `knowledgeBaseEnabled={true}`. ChatKit sends `multipart/form-data` with:
 
-- `file` — the PDF or DOCX file
+- `file` — text file
 - `collection_id` — string identifying the knowledge base bucket
 
 Expected response:
@@ -231,11 +231,11 @@ PINECONE_HOST=
 
 **API Endpoints**
 
-| Method | Endpoint      | Description                                |
-| ------ | ------------- | ------------------------------------------ |
-| `POST` | `/chat`       | Send a message, get a streaming response   |
-| `POST` | `/upload-doc` | Upload a PDF or DOCX to the knowledge base |
-| `GET`  | `/health`     | Health check                               |
+| Method | Endpoint      | Description                              |
+| ------ | ------------- | ---------------------------------------- |
+| `POST` | `/chat`       | Send a message, get a streaming response |
+| `POST` | `/upload-doc` | Upload a text file to the knowledge base |
+| `GET`  | `/health`     | Health check                             |
 
 **Deploy to Render (Free)**
 
@@ -270,7 +270,7 @@ import ChatBotWrapper from "@/components/ChatBotWrapper";
 
 ## Knowledge Base
 
-When `knowledgeBaseEnabled={true}`, a 📎 button appears in the chat window. Users can upload a PDF or DOCX which gets chunked, embedded, and stored in Pinecone. The bot answers questions from that document automatically.
+When `knowledgeBaseEnabled={true}`, a 📎 button appears in the chat window. Users can upload a text file which gets chunked, embedded, and stored in Pinecone. The bot answers questions from that document automatically.
 
 Use a unique `collectionId` per app so documents stay isolated:
 
@@ -287,7 +287,7 @@ Use a unique `collectionId` per app so documents stay isolated:
 
 ```bash
 curl -X POST https://your-server.com/upload-doc \
-  -F "file=@your-document.pdf" \
+  -F "file=@your-document.txt" \
   -F "collection_id=acme-corp-docs"
 ```
 
