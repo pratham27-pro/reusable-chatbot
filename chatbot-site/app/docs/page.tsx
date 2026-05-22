@@ -312,13 +312,14 @@ NEXT_PUBLIC_GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxx`}
         </h3>
         <p className="text-gray-400 mb-4 text-sm leading-relaxed">
           Upload your document once to the server before your users ever open
-          the chat. Set{" "}
+          the chat. Keep{" "}
           <code className="text-[#00e5a0] bg-[#00e5a0]/10 px-1.5 py-0.5 rounded text-xs">
-            knowledgeBaseEnabled={"{false}"}
+            knowledgeBaseEnabled={"{true}"}
           </code>{" "}
-          — no upload UI is shown. The chatbot silently answers from your
-          pre-loaded knowledge base. Since the document is stored in Pinecone it
-          persists forever and survives server restarts.
+          so the bot queries Pinecone on every message. The upload UI will show
+          but users don't need to use it — the knowledge base is already loaded.
+          Since the document is stored in Pinecone it persists forever and
+          survives server restarts.
         </p>
 
         {/* ── CHANGED: .pdf → .txt in curl example ── */}
@@ -336,11 +337,11 @@ NEXT_PUBLIC_GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxx`}
           label="Chatbot config after pre-ingesting"
           className="mt-4"
         >
-          {`// knowledgeBaseEnabled is false — no upload UI shown
-// The bot silently uses the pre-ingested knowledge base
+          {`// knowledgeBaseEnabled={true} — the bot uses the pre-ingested knowledge base
+// The upload UI is shown but users don't need to upload anything
 <ChatBot
   apiEndpoint="https://reusable-chatbot.onrender.com"
-  knowledgeBaseEnabled={false}
+  knowledgeBaseEnabled={true}
   collectionId="acme-corp-docs"
   systemPrompt="You are a support assistant for Acme Corp. Answer only from the provided documentation."
 />`}

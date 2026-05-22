@@ -80,3 +80,7 @@ models/
 chatbot-test/
 
 chroma_db/
+
+.claude
+graphify-out/
+CLAUDE.md
