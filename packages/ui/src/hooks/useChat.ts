@@ -211,7 +211,7 @@ export function useChat(
               role: m.role === "bot" ? "assistant" : "user",
               content: m.content,
             })),
-            use_knowledge_base: knowledgeBaseEnabled,
+            use_knowledge_base: true,
             collection_id: collectionId,
           }),
         });
