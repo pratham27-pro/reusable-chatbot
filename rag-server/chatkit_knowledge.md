@@ -2,13 +2,7 @@
 
 ## What is ChatKit?
 
-ChatKit (`@pratham_jain/chatkit`) is a free, open-source npm package that lets developers add a fully customizable AI-powered floating chatbot to any React application in minutes. It is built with Vite, TypeScript, and Tailwind CSS. The LLM is powered by Groq. It supports RAG (Retrieval-Augmented Generation) via a Node.js + LangChain.js + Chroma backend, enabling the chatbot to answer questions from your own document.
-
-## Site Pages
-
-- **Home** (`/`) — Overview of ChatKit, key features, and a live demo
-- **Docs** (`/docs`) — Full installation and usage documentation
-- **Playground** (`/playground`) — Interactive demo to try the chatbot live
+ChatKit (`@pratham_jain/chatkit`) is a free, open-source npm package that lets developers add a fully customizable AI-powered floating chatbot to any React application in under 2 minutes. It is built with Vite, TypeScript, and Tailwind CSS v4. The LLM is powered by Groq (Llama 3.3 70B). It supports RAG (Retrieval-Augmented Generation) via a Python FastAPI + Pinecone backend, enabling the chatbot to answer questions from your own documents.
 
 ## Installation
 
@@ -16,159 +10,161 @@ ChatKit (`@pratham_jain/chatkit`) is a free, open-source npm package that lets d
 npm install @pratham_jain/chatkit
 ```
 
-No manual stylesheet imports needed. Just install, import, and configure via props.
+No stylesheet imports needed. CSS is auto-injected.
 
-## Basic Usage
+## Usage
+
+### Option 1 — No backend (direct Groq, quickest setup)
 
 ```tsx
-import { ChatKit } from "@pratham_jain/chatkit";
+import { ChatBot } from '@pratham_jain/chatkit';
 
-function App() {
-  return (
-    <ChatKit
-      apiKey="your-groq-api-key"
-      systemPrompt="You are a helpful assistant for my app."
-    />
-  );
-}
+<ChatBot apiKey={import.meta.env.VITE_GROQ_API_KEY} />
 ```
 
-## Props Reference
+Use only for demos or internal tools — the API key is visible in the browser bundle.
 
-### Core Props
+For Next.js:
+```tsx
+<ChatBot apiKey={process.env.NEXT_PUBLIC_GROQ_API_KEY} />
+```
 
-| Prop           | Type     | Default                          | Description                    |
-| -------------- | -------- | -------------------------------- | ------------------------------ |
-| `apiKey`       | `string` | required                         | Your Groq API key              |
-| `systemPrompt` | `string` | `"You are a helpful assistant."` | Custom instructions for the AI |
-| `model`        | `string` | `"llama3-8b-8192"`               | Groq model to use              |
-| `placeholder`  | `string` | `"Ask me anything..."`           | Input placeholder text         |
-
-### Styling Props
-
-| Prop              | Type                              | Default          | Description                                       |
-| ----------------- | --------------------------------- | ---------------- | ------------------------------------------------- |
-| `primaryColor`    | `string`                          | `"#00e5a0"`      | Main accent color (button, send icon, highlights) |
-| `backgroundColor` | `string`                          | `"#0a0f1e"`      | Chat window background color                      |
-| `textColor`       | `string`                          | `"#f0f4ff"`      | Message text color                                |
-| `fontFamily`      | `string`                          | `"inherit"`      | Font used inside the chat window                  |
-| `borderRadius`    | `string`                          | `"16px"`         | Border radius of the chat window                  |
-| `position`        | `"bottom-right" \| "bottom-left"` | `"bottom-right"` | Position of the floating button                   |
-| `buttonSize`      | `number`                          | `56`             | Size of the floating trigger button in px         |
-| `width`           | `string`                          | `"380px"`        | Width of the chat window                          |
-| `height`          | `string`                          | `"520px"`        | Height of the chat window                         |
-| `zIndex`          | `number`                          | `9999`           | z-index of the chat widget                        |
-
-### Behavior Props
-
-| Prop             | Type      | Default                     | Description                                   |
-| ---------------- | --------- | --------------------------- | --------------------------------------------- |
-| `initialMessage` | `string`  | `"Hi! How can I help you?"` | First message shown by the bot                |
-| `maxMessages`    | `number`  | `50`                        | Max messages stored in history                |
-| `streamResponse` | `boolean` | `true`                      | Whether to stream AI responses token by token |
-| `showTimestamps` | `boolean` | `false`                     | Show message timestamps                       |
-
-## Styling Examples
-
-### Green + Dark (Default)
+### Option 2 — Hosted RAG server (knowledge base, zero setup)
 
 ```tsx
-<ChatKit
-  apiKey="..."
-  primaryColor="#00e5a0"
-  backgroundColor="#0a0f1e"
-  textColor="#f0f4ff"
+import { ChatBot } from '@pratham_jain/chatkit';
+
+<ChatBot
+  apiEndpoint="https://reusable-chatbot.onrender.com"
+  knowledgeBaseEnabled={true}
+  collectionId="your-unique-project-name"
 />
 ```
 
-### Blue + White (Light Mode)
+The widget automatically pings the server when it loads so it is warm before the user types. Always set a unique `collectionId` — documents are stored in separate Pinecone namespaces per ID.
 
-```tsx
-<ChatKit
-  apiKey="..."
-  primaryColor="#2563eb"
-  backgroundColor="#ffffff"
-  textColor="#1e293b"
-  borderRadius="12px"
-/>
+### Option 3 — Self-hosted server
+
+Clone the repo, set your own Groq + Pinecone keys, and point the widget at your server:
+
+```bash
+git clone https://github.com/pratham27-pro/reusable-chatbot
+cd reusable-chatbot/rag-server
+pip install -r requirements.txt
+cp .env.sample .env
+uvicorn app.main:app --reload --port 8000
 ```
 
-### Purple + Dark
-
 ```tsx
-<ChatKit
-  apiKey="..."
-  primaryColor="#a855f7"
-  backgroundColor="#0f0a1a"
-  textColor="#f8f4ff"
-  buttonSize={60}
-/>
+<ChatBot apiEndpoint="http://localhost:8000" knowledgeBaseEnabled={true} collectionId="my-project" />
 ```
 
-### Position Bottom-Left
+## Props
 
-```tsx
-<ChatKit apiKey="..." position="bottom-left" />
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `apiEndpoint` | `string` | — | URL of your RAG backend server |
+| `apiKey` | `string` | — | Groq API key for direct browser-to-Groq calls |
+| `botName` | `string` | `"Assistant"` | Name shown in the chat header |
+| `botAvatar` | `string` | Robot icon | URL to a custom avatar image |
+| `buttonColor` | `string` | `"#6366f1"` | FAB button and header color |
+| `theme` | `"light" \| "dark"` | `"light"` | Color scheme of the chat window |
+| `welcomeMessage` | `string` | `"Hi! How can I help?"` | First message shown before any chat |
+| `systemPrompt` | `string` | `"You are a helpful assistant."` | Instructions sent to the LLM on every request |
+| `placeholder` | `string` | `"Type a message..."` | Input field placeholder text |
+| `floatPosition` | `"bottom-right" \| "bottom-left"` | `"bottom-right"` | Initial position of the FAB button |
+| `knowledgeBaseEnabled` | `boolean` | `false` | Show a document upload button in the chat window |
+| `collectionId` | `string` | `"default"` | Unique namespace for your knowledge base in Pinecone |
+| `enableVoice` | `boolean` | `false` | Enable mic input and text-to-speech output |
+| `persistHistory` | `boolean` | `true` | Save and restore chat history via localStorage |
+
+## Knowledge Base
+
+When `knowledgeBaseEnabled={true}`, a 📄 button appears inside the chat window. Users can upload a `.txt` file (max 2MB) which gets chunked, embedded, and stored in Pinecone. The bot answers questions from that document automatically.
+
+Use a unique `collectionId` per app so documents stay isolated from other users on the shared server.
+
+### Pre-ingesting documents (silent knowledge base)
+
+Upload your document once before users open the chat:
+
+```bash
+curl -X POST https://reusable-chatbot.onrender.com/upload-doc \
+  -F "file=@./docs/your-knowledge.txt" \
+  -F "collection_id=acme-corp-docs"
 ```
 
-## RAG Support (Custom Knowledge Base)
+Then configure the chatbot with `knowledgeBaseEnabled={true}` and the same `collectionId`. The bot queries Pinecone on every message. Documents persist in Pinecone across server restarts.
 
-ChatKit supports RAG via a companion Node.js server using LangChain.js and Chroma. This lets the chatbot answer questions from your own document.
+## Voice Support
 
-Setup steps:
+When `enableVoice={true}`:
+- A mic button appears — click to speak, click again to stop
+- A speaker button appears — click to hear the bot's last response read aloud
+- Uses the browser's built-in Web Speech API — no external service or API key needed
+- Works in Chrome, Edge, and Safari
 
-1. Run the RAG server locally or deploy it
-2. Upload your documents to the server
-3. Pass the server URL to ChatKit via the `ragServerUrl` prop
+## Chat History
+
+Chat history is saved to localStorage by default (`persistHistory={true}`). Works with both `apiEndpoint` and `apiKey`. Set `persistHistory={false}` to disable.
+
+## Next.js Setup
+
+Wrap in a client component since ChatKit uses browser APIs:
 
 ```tsx
-<ChatKit
-  apiKey="..."
-  ragServerUrl="http://localhost:3001"
-  systemPrompt="Answer only from the provided documents."
-/>
+// components/ChatBotWrapper.tsx
+"use client";
+export { ChatBot } from "@pratham_jain/chatkit";
 ```
 
-## Getting a Groq API Key
+```tsx
+// app/page.tsx
+import ChatBotWrapper from "@/components/ChatBotWrapper";
+<ChatBotWrapper apiEndpoint="https://reusable-chatbot.onrender.com" />
+```
 
-1. Go to [https://console.groq.com](https://console.groq.com)
-2. Sign up for a free account
-3. Navigate to API Keys → Create API Key
-4. Copy the key and pass it to the `apiKey` prop
+## Tech Stack
 
-Groq is free to use with generous rate limits.
-
-## Supported Groq Models
-
-- `llama3-8b-8192` (default, fast)
-- `llama3-70b-8192` (more capable)
-- `mixtral-8x7b-32768` (large context)
-- `gemma-7b-it`
-
-## GitHub Repository
-
-[https://github.com/pratham27-pro/reusable-chatbot](https://github.com/pratham27-pro/reusable-chatbot)
-
-## npm Package
-
-[https://www.npmjs.com/package/@pratham_jain/chatkit](https://www.npmjs.com/package/@pratham_jain/chatkit)
+| Layer | Technology | Cost |
+|---|---|---|
+| Widget | React + TypeScript + Tailwind v4 | Free |
+| LLM | Groq (Llama 3.3 70B) | Free |
+| Embeddings | FastEmbed (BAAI/bge-small-en-v1.5, runs locally on server) | Free |
+| Vector DB | Pinecone | Free tier |
+| Voice | Web Speech API | Free (browser built-in) |
 
 ## Common Questions
 
-**Q: Does it work with Next.js?**
-A: Yes. Add `"use client"` at the top of the component where you use ChatKit since it uses browser APIs.
-
 **Q: Do I need a backend?**
-A: No backend needed for basic usage. Just pass your Groq API key as a prop. The RAG server is only needed if you want document-based Q&A.
+No backend needed for basic chat. Pass your Groq API key as `apiKey`. The RAG server is only needed for the knowledge base feature.
 
-**Q: Is the API key exposed?**
-A: For production apps, proxy your Groq API calls through your own backend. For demos and internal tools it's fine to use directly.
+**Q: Does it work with Next.js?**
+Yes. Wrap in a client component with `"use client"` since ChatKit uses browser APIs.
 
-**Q: Can I use it with React Native?**
-A: Not currently. ChatKit is for React web apps only.
+**Q: Is the API key exposed when using apiKey?**
+Yes — `VITE_` and `NEXT_PUBLIC_` variables are visible in the browser bundle. Use `apiKey` only for demos and internal tools. For public production apps, use `apiEndpoint` so the key stays server-side.
+
+**Q: What file types can I upload for the knowledge base?**
+Only `.txt` files are supported. Max file size is 2MB.
+
+**Q: How do I keep my knowledge base isolated from other users?**
+Set a unique `collectionId` prop. Each collection ID maps to a separate Pinecone namespace, so your documents are completely isolated.
+
+**Q: What is collectionId?**
+A string that namespaces your documents in Pinecone. Use your app name or domain (e.g. `"acme-corp"`, `"my-hackathon-project"`). Different apps with different collectionIds cannot access each other's documents.
+
+**Q: Can I use React Native?**
+No, ChatKit is for React web apps only. It uses browser APIs (Web Speech, localStorage, fetch streams).
 
 **Q: How do I change the chatbot's language or tone?**
-A: Use the `systemPrompt` prop. Example: `systemPrompt="You are a friendly assistant. Always respond in Spanish."`
+Use the `systemPrompt` prop. Example: `systemPrompt="You are a friendly assistant. Always respond in Spanish."`
 
-**Q: Can I remove the ChatKit branding?**
-A: Yes, this is planned in the roadmap. Currently the footer shows 'Powered by ChatKit'.
+**Q: Why does the chatbot take a few seconds to respond the first time?**
+The hosted server at reusable-chatbot.onrender.com runs on Render's free tier which can sleep after inactivity. The widget sends a warmup ping when it loads to minimize this delay.
+
+**Q: Where is the source code?**
+GitHub: https://github.com/pratham27-pro/reusable-chatbot
+
+**Q: Where is the npm package?**
+https://www.npmjs.com/package/@pratham_jain/chatkit

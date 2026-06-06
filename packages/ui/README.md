@@ -42,13 +42,21 @@ import { ChatBot } from "@pratham_jain/chatkit";
 > Use `apiKey` only for demos and internal tools. For public production apps,
 > use `apiEndpoint` so the key stays on your server.
 
-### Option 2 — Your own backend (recommended for production)
+### Option 2 — Hosted RAG server (knowledge base + no backend needed)
 
 ```tsx
 import { ChatBot } from "@pratham_jain/chatkit";
 
-<ChatBot apiEndpoint="https://your-backend.com" />;
+// Use the shared server — zero setup, includes Pinecone knowledge base
+<ChatBot
+  apiEndpoint="https://reusable-chatbot.onrender.com"
+  knowledgeBaseEnabled={true}
+  collectionId="your-unique-project-name"
+/>;
 ```
+
+> The widget sends a warmup ping when it loads so the server is ready before your user types.
+> Always set a unique `collectionId` — documents are namespaced in Pinecone per ID.
 
 > ❌ If neither `apiKey` nor `apiEndpoint` is provided, the chatbot will show
 > a configuration error message and log a warning to the console.
@@ -66,7 +74,7 @@ function App() {
       <YourApp />
 
       <ChatBot
-        apiEndpoint="https://your-backend.com"
+        apiEndpoint="https://reusable-chatbot.onrender.com"
         botName="Support Bot"
         buttonColor="#6366f1"
         theme="dark"
@@ -123,110 +131,40 @@ The shared server runs Groq + Pinecone and is free to use. Set a unique `collect
 
 ---
 
-### Bringing Your Own Backend
-
-Your server can be Node.js, FastAPI, Django, or anything else. It must implement these two routes:
-
-#### `POST /chat`
-
-ChatKit sends this body on every message:
-
-```json
-{
-  "message": "string",
-  "system_prompt": "string",
-  "history": [{ "role": "user | assistant", "content": "string" }],
-  "use_knowledge_base": true,
-  "collection_id": "string"
-}
-```
-
-Expected response: a **plain text stream** (chunked transfer encoding). Here's a minimal Node.js + Express example:
-
-```ts
-import Groq from "groq-sdk";
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
-app.post("/chat", async (req, res) => {
-  const { message, system_prompt, history } = req.body;
-
-  res.setHeader("Content-Type", "text/plain");
-  res.setHeader("Transfer-Encoding", "chunked");
-
-  const stream = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
-    stream: true,
-    messages: [
-      {
-        role: "system",
-        content: system_prompt || "You are a helpful assistant.",
-      },
-      ...history.slice(-10),
-      { role: "user", content: message },
-    ],
-  });
-
-  for await (const chunk of stream) {
-    const token = chunk.choices?.delta?.content;
-    if (token) res.write(token);
-  }
-  res.end();
-});
-```
-
-#### `POST /upload-doc`
-
-Only required if `knowledgeBaseEnabled={true}`. ChatKit sends `multipart/form-data` with:
-
-- `file` — the text file
-- `collection_id` — string identifying the knowledge base bucket
-
-Expected response:
-
-```json
-{ "message": "Ingested 42 chunks", "collection_id": "my-app-docs" }
-```
-
-#### `.env`
-
-```env
-# Your backend .env — never expose this to the frontend
-GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxx
-```
-
----
-
 ### Self-Hosting the RAG Server
 
-The companion RAG server is a FastAPI + Pinecone + LangChain.js Python server included in this repo.
-
-**Prerequisites**
-
-- Python 3.11+
-- A free [Groq API key](https://console.groq.com) — no credit card required
-
-**Run Locally**
+Clone the companion Python FastAPI server from the repo, wire up your own Groq + Pinecone keys, and point the widget at your local or production URL.
 
 ```bash
 git clone https://github.com/pratham27-pro/reusable-chatbot
-cd rag-server
+cd reusable-chatbot/rag-server
 
 pip install -r requirements.txt
 
-cp .env.example .env
-# Add your GROQ_API_KEY to .env
+cp .env.sample .env
+# Fill in your keys:
+# GROQ_API_KEY, PINECONE_API_KEY, PINECONE_INDEX_NAME, PINECONE_HOST
 
 uvicorn app.main:app --reload --port 8000
+```
+
+Then point the widget at your server:
+
+```tsx
+// localhost during development
+<ChatBot apiEndpoint="http://localhost:8000" knowledgeBaseEnabled={true} collectionId="my-project" />
+
+// your own production domain
+<ChatBot apiEndpoint="https://your-server.com" knowledgeBaseEnabled={true} collectionId="my-project" />
 ```
 
 **`.env` Reference**
 
 ```env
-GROQ_API_KEY=
-
-PINECONE_API_KEY=
-PINECONE_INDEX_NAME=
-PINECONE_HOST=
+GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxx
+PINECONE_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx
+PINECONE_INDEX_NAME=your-index-name
+PINECONE_HOST=https://your-index-host.pinecone.io
 ```
 
 **API Endpoints**
@@ -235,15 +173,7 @@ PINECONE_HOST=
 | ------ | ------------- | ---------------------------------------- |
 | `POST` | `/chat`       | Send a message, get a streaming response |
 | `POST` | `/upload-doc` | Upload a text file to the knowledge base |
-| `GET`  | `/health`     | Health check                             |
-
-**Deploy to Render (Free)**
-
-1. Push `rag-server/` to a GitHub repo
-2. Go to [render.com](https://render.com) → New → Web Service
-3. Connect your repo, select **Docker** as runtime
-4. Add `GROQ_API_KEY` in the Render dashboard environment variables
-5. Deploy — your server URL is your `apiEndpoint`
+| `GET`  | `/health`     | Health check (also used for warmup ping) |
 
 ---
 
@@ -261,7 +191,7 @@ export { ChatBot } from "@pratham_jain/chatkit";
 // app/page.tsx
 import ChatBotWrapper from "@/components/ChatBotWrapper";
 
-<ChatBotWrapper apiEndpoint="https://your-server.com" />
+<ChatBotWrapper apiEndpoint="https://reusable-chatbot.onrender.com" />
 // or
 <ChatBotWrapper apiKey={process.env.NEXT_PUBLIC_GROQ_API_KEY} />
 ```
@@ -276,7 +206,7 @@ Use a unique `collectionId` per app so documents stay isolated:
 
 ```tsx
 <ChatBot
-  apiEndpoint="https://your-backend.com"
+  apiEndpoint="https://reusable-chatbot.onrender.com"
   knowledgeBaseEnabled={true}
   collectionId="acme-corp-docs"
   systemPrompt="Answer only from the uploaded documents."
@@ -286,12 +216,12 @@ Use a unique `collectionId` per app so documents stay isolated:
 **Pre-ingesting documents** (so users don't need to upload manually):
 
 ```bash
-curl -X POST https://your-server.com/upload-doc \
+curl -X POST https://reusable-chatbot.onrender.com/upload-doc \
   -F "file=@your-document.txt" \
   -F "collection_id=acme-corp-docs"
 ```
 
-Then set `knowledgeBaseEnabled={false}` — the bot answers from the pre-loaded knowledge base silently.
+Then set `knowledgeBaseEnabled={true}` — the bot queries Pinecone on every message. The upload UI is visible but users don't need to use it since the knowledge base is already loaded.
 
 ---
 
