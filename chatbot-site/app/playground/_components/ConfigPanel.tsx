@@ -120,6 +120,30 @@ export function ConfigPanel({ config, set }: Props) {
             rows={4}
           />
         </div>
+
+        <div>
+          <ControlLabel label="Knowledge Base" hint="doc upload button in chat" />
+          <SegmentControl
+            value={config.knowledgeBaseEnabled ? "on" : "off"}
+            onChange={(v) => set("knowledgeBaseEnabled", v === "on")}
+            options={[
+              { label: "Off", value: "off" },
+              { label: "On", value: "on" },
+            ]}
+          />
+        </div>
+
+        <div>
+          <ControlLabel label="Voice" hint="mic input + TTS output" />
+          <SegmentControl
+            value={config.enableVoice ? "on" : "off"}
+            onChange={(v) => set("enableVoice", v === "on")}
+            options={[
+              { label: "Off", value: "off" },
+              { label: "On", value: "on" },
+            ]}
+          />
+        </div>
       </div>
     </div>
   );

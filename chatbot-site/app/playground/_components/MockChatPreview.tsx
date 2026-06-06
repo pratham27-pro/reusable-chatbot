@@ -136,6 +136,19 @@ export function MockChatPreview({ config }: { config: Config }) {
           </div>
         </div>
 
+        {/* Doc upload strip */}
+        {config.knowledgeBaseEnabled && (
+          <div
+            className="px-3 py-1.5 border-t flex items-center gap-1.5"
+            style={{
+              borderColor: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
+              backgroundColor: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)",
+            }}
+          >
+            <span className="text-[9px] text-indigo-400">📄 Attach .txt</span>
+          </div>
+        )}
+
         {/* Input bar */}
         <div
           className="px-3 py-2 border-t flex items-center gap-2"
@@ -143,6 +156,17 @@ export function MockChatPreview({ config }: { config: Config }) {
             borderColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
           }}
         >
+          {config.enableVoice && (
+            <div
+              className="w-5 h-5 rounded-md flex items-center justify-center text-[10px] shrink-0"
+              style={{
+                backgroundColor: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)",
+                color: isDark ? "#94a3b8" : "#9ca3af",
+              }}
+            >
+              🎤
+            </div>
+          )}
           <div
             className="flex-1 text-[10px] px-2.5 py-1.5 rounded-lg"
             style={{

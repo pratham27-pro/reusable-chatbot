@@ -6,6 +6,8 @@ export interface Config {
   systemPrompt: string;
   floatPosition: "bottom-right" | "bottom-left";
   placeholder: string;
+  knowledgeBaseEnabled: boolean;
+  enableVoice: boolean;
 }
 
 export const DEFAULT: Config = {
@@ -16,6 +18,8 @@ export const DEFAULT: Config = {
   systemPrompt: "You are a helpful assistant.",
   floatPosition: "bottom-right",
   placeholder: "Type a message...",
+  knowledgeBaseEnabled: false,
+  enableVoice: false,
 };
 
 export const PRESETS: {

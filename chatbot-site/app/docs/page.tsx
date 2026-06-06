@@ -74,17 +74,17 @@ export default function DocsPage() {
 
         <ShikiBlock
           lang="tsx"
-          label="Option 2 — Your own backend (apiEndpoint)"
+          label="Option 2 — RAG server with knowledge base (apiEndpoint)"
           className="mt-4"
         >
           {`import { ChatBot } from '@pratham_jain/chatkit';
 
-// Recommended for production — API key stays on your server
-<ChatBot apiEndpoint="https://your-backend.com" />
+// Use the hosted server — no setup needed
+<ChatBot apiEndpoint="https://reusable-chatbot.onrender.com" />
 
 // Full config
 <ChatBot
-  apiEndpoint="https://your-backend.com"
+  apiEndpoint="https://reusable-chatbot.onrender.com"
   botName="Support Bot"
   buttonColor="#6366f1"
   theme="dark"
@@ -109,102 +109,103 @@ export default function DocsPage() {
         <PropsTable />
       </section>
 
-      {/* ── Divider: backend ─────────────────────────────────────────── */}
-      <Divider label="backend setup" />
+      {/* ── Divider: server setup ────────────────────────────────────── */}
+      <Divider label="server setup" />
 
-      {/* ── Backend Setup ─────────────────────────────────────────────── */}
+      {/* ── Server Setup ──────────────────────────────────────────────── */}
       <section className="mb-12">
         <h2 className="text-2xl font-semibold text-white mb-4 pl-3 border-l-2 border-[#00e5a0]">
-          Backend Setup
+          Server Setup
         </h2>
         <p className="text-gray-400 mb-6 text-sm leading-relaxed">
-          If you use{" "}
+          When you pass{" "}
           <code className="text-[#00e5a0] bg-[#00e5a0]/10 px-1.5 py-0.5 rounded text-xs">
             apiEndpoint
           </code>
-          , your server must implement two routes that ChatKit calls internally.
-          It can be any framework — Node.js, FastAPI, Django, anything.
+          , ChatKit talks to a FastAPI RAG server (Groq + Pinecone). You can use
+          the hosted instance or run your own — both work identically.
         </p>
 
+        {/* Option A */}
         <h3 className="text-base font-semibold text-white mb-3">
-          Required Routes
+          Option A — Hosted server (zero setup)
         </h3>
+        <p className="text-gray-400 mb-4 text-sm leading-relaxed">
+          Point{" "}
+          <code className="text-[#00e5a0] bg-[#00e5a0]/10 px-1.5 py-0.5 rounded text-xs">
+            apiEndpoint
+          </code>{" "}
+          at the shared server. No accounts, no keys, no infra. The widget
+          automatically sends a warmup ping when it loads so the server is
+          ready before your user types.
+        </p>
 
-        <ShikiBlock
-          lang="ts"
-          label="POST /chat — Node.js / Express example"
-          className="mb-4"
-        >
-          {`// ChatKit sends this body on every message:
-// {
-//   message: string,
-//   system_prompt: string,
-//   history: [{ role: "user" | "assistant", content: string }],
-//   use_knowledge_base: boolean,
-//   collection_id: string
-// }
-
-import Groq from "groq-sdk";
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
-app.post("/chat", async (req, res) => {
-  const { message, system_prompt, history } = req.body;
-
-  res.setHeader("Content-Type", "text/plain");
-  res.setHeader("Transfer-Encoding", "chunked");
-
-  const stream = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
-    stream: true,
-    messages: [
-      { role: "system", content: system_prompt || "You are a helpful assistant." },
-      ...history.slice(-10),
-      { role: "user", content: message },
-    ],
-  });
-
-  for await (const chunk of stream) {
-    const token = chunk.choices[0]?.delta?.content;
-    if (token) res.write(token);
-  }
-  res.end();
-});`}
+        <ShikiBlock lang="tsx" label="Use the hosted server">
+          {`<ChatBot
+  apiEndpoint="https://reusable-chatbot.onrender.com"
+  knowledgeBaseEnabled={true}
+  collectionId="your-unique-project-name"
+/>`}
         </ShikiBlock>
 
-        {/* ── CHANGED: file type updated to .txt ── */}
-        <ShikiBlock
-          lang="ts"
-          label="POST /upload-doc — only needed if knowledgeBaseEnabled={true}"
-          className="mb-4"
-        >
-          {`// ChatKit sends: multipart/form-data
-// Fields: file (.txt only), collection_id (string)
-// Expected response: { message: string, collection_id: string }
+        <div className="mt-3 mb-8 rounded-xl border border-blue-400/20 bg-blue-400/5 px-4 py-3 text-xs text-blue-300/80 leading-relaxed">
+          💡 <strong className="text-blue-300">Always set a unique{" "}
+          <code className="bg-blue-400/10 px-1 rounded">collectionId</code>.</strong>{" "}
+          Documents are stored in Pinecone under that namespace — a unique ID
+          keeps your knowledge base isolated from other projects on the shared
+          server.
+        </div>
 
-app.post("/upload-doc", upload.single("file"), async (req, res) => {
-  const { collection_id } = req.body;
-  const file = req.file;
-  // → chunk, embed and store in your vector DB under collection_id
-  res.json({ message: "Ingested successfully", collection_id });
-});`}
-        </ShikiBlock>
-
-        <h3 className="text-base font-semibold text-white mb-3 mt-8">
-          Environment Variables
+        {/* Option B */}
+        <h3 className="text-base font-semibold text-white mb-3">
+          Option B — Self-hosted (localhost or your own server)
         </h3>
-        <ShikiBlock lang="bash" label=".env">
-          {`# Your backend .env — never expose this to the frontend
-GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxx`}
+        <p className="text-gray-400 mb-4 text-sm leading-relaxed">
+          Clone the repo, drop in your own Groq and Pinecone keys, and run the
+          server locally or deploy it anywhere. Fastest option for development.
+        </p>
+
+        <ShikiBlock lang="bash" label="1. Clone and install">
+          {`git clone https://github.com/pratham27-pro/reusable-chatbot
+cd reusable-chatbot/rag-server
+pip install -r requirements.txt`}
         </ShikiBlock>
 
-        <div className="mt-4 rounded-xl border border-blue-400/20 bg-blue-400/5 px-4 py-3 text-xs text-blue-300/80 leading-relaxed">
-          💡 The <code className="bg-blue-400/10 px-1 rounded">upload-doc</code>{" "}
-          route is only required if you use{" "}
-          <code className="bg-blue-400/10 px-1 rounded">
-            knowledgeBaseEnabled={"{true}"}
-          </code>
-          . If you only need chat, implement{" "}
-          <code className="bg-blue-400/10 px-1 rounded">/chat</code> only.
+        <ShikiBlock lang="bash" label="2. Configure .env" className="mt-4">
+          {`cp .env.sample .env
+
+# Fill in your keys:
+GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxx
+PINECONE_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx
+PINECONE_INDEX_NAME=your-index-name
+PINECONE_HOST=https://your-index-host.pinecone.io`}
+        </ShikiBlock>
+
+        <ShikiBlock lang="bash" label="3. Start the server" className="mt-4">
+          {`uvicorn app.main:app --reload --port 8000`}
+        </ShikiBlock>
+
+        <ShikiBlock lang="tsx" label="4. Point your chatbot at it" className="mt-4">
+          {`// localhost (during development)
+<ChatBot
+  apiEndpoint="http://localhost:8000"
+  knowledgeBaseEnabled={true}
+  collectionId="my-project"
+/>
+
+// your own production domain
+<ChatBot
+  apiEndpoint="https://your-server.com"
+  knowledgeBaseEnabled={true}
+  collectionId="my-project"
+/>`}
+        </ShikiBlock>
+
+        <div className="mt-4 rounded-xl border border-yellow-400/20 bg-yellow-400/5 px-4 py-3 text-xs text-yellow-300/80 leading-relaxed">
+          ⚠️ You need a free{" "}
+          <strong className="text-yellow-300">Pinecone</strong> account and a{" "}
+          <strong className="text-yellow-300">Groq</strong> API key for the
+          self-hosted path. Both have free tiers.
         </div>
       </section>
 
@@ -344,32 +345,6 @@ NEXT_PUBLIC_GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxx`}
   knowledgeBaseEnabled={true}
   collectionId="acme-corp-docs"
   systemPrompt="You are a support assistant for Acme Corp. Answer only from the provided documentation."
-/>`}
-        </ShikiBlock>
-
-        {/* Method 3 */}
-        <h3 className="text-base font-semibold text-white mb-3 mt-8">
-          Method 3 — Auto-ingest from a public URL{" "}
-          <span className="text-[10px] font-mono text-[#00e5a0]/60 bg-[#00e5a0]/10 px-2 py-0.5 rounded-full ml-1 align-middle">
-            coming soon
-          </span>
-        </h3>
-        <p className="text-gray-400 mb-4 text-sm leading-relaxed">
-          Pass a public URL (e.g. a raw GitHub file) as{" "}
-          <code className="text-[#00e5a0] bg-[#00e5a0]/10 px-1.5 py-0.5 rounded text-xs">
-            knowledgeBaseUrl
-          </code>
-          . The server fetches and ingests it automatically on first use — no
-          manual curl, no upload UI. Once stored in Pinecone it's never
-          re-fetched.
-        </p>
-
-        <ShikiBlock lang="tsx" label="Auto-ingest (coming soon)">
-          {`<ChatBot
-  apiEndpoint="https://reusable-chatbot.onrender.com"
-  knowledgeBaseUrl="https://raw.githubusercontent.com/your-org/repo/main/docs/knowledge.md"
-  collectionId="acme-corp-docs"
-  systemPrompt="Answer only from the provided documentation."
 />`}
         </ShikiBlock>
 

@@ -17,21 +17,25 @@ export function PreviewPanel({ config }: Props) {
   const [shikiHtml, setShikiHtml] = useState<string | null>(null);
   const accent = makeAccent(config.buttonColor);
 
-  const code = useMemo(
-    () => `import { ChatBot } from '@pratham_jain/chatkit';
-
-<ChatBot
-  apiEndpoint="https://your-rag-server.com"
-  botName="${config.botName}"
-  buttonColor="${config.buttonColor}"
-  theme="${config.theme}"
-  welcomeMessage="${config.welcomeMessage}"
-  systemPrompt="${config.systemPrompt}"
-  floatPosition="${config.floatPosition}"
-  placeholder="${config.placeholder}"
-/>`,
-    [config],
-  );
+  const code = useMemo(() => {
+    const lines = [
+      `import { ChatBot } from '@pratham_jain/chatkit';`,
+      ``,
+      `<ChatBot`,
+      `  apiEndpoint="https://reusable-chatbot.onrender.com"`,
+      `  botName="${config.botName}"`,
+      `  buttonColor="${config.buttonColor}"`,
+      `  theme="${config.theme}"`,
+      `  welcomeMessage="${config.welcomeMessage}"`,
+      `  systemPrompt="${config.systemPrompt}"`,
+      `  floatPosition="${config.floatPosition}"`,
+      `  placeholder="${config.placeholder}"`,
+      ...(config.knowledgeBaseEnabled ? [`  knowledgeBaseEnabled={true}`] : []),
+      ...(config.enableVoice ? [`  enableVoice={true}`] : []),
+      `/>`,
+    ];
+    return lines.join("\n");
+  }, [config]);
 
   useEffect(() => {
     codeToHtml(code, { lang: "tsx", theme: "github-dark" }).then(setShikiHtml);
