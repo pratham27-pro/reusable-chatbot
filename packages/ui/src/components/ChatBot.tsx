@@ -19,6 +19,7 @@ export function ChatBot({
   collectionId = "default",
   floatPosition = "bottom-right",
   enableVoice = false,
+  persistHistory = true,
 }: ChatBotProps) {
   if (!apiEndpoint && !apiKey) {
     console.error(
@@ -111,6 +112,7 @@ export function ChatBot({
               collectionId={collectionId}
               onClose={() => setIsOpen(false)}
               enableVoice={enableVoice}
+              persistHistory={persistHistory}
             />
           </div>
         )}

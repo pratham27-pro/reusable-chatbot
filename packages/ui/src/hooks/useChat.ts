@@ -58,12 +58,11 @@ export function useChat(
   collectionId = "default",
   apiKey?: string,
 ) {
-  // const storageKey = apiEndpoint ?? apiKey ?? "default";
+  const storageKey = apiEndpoint ?? apiKey;
 
   const [messages, setMessages] = useState<Message[]>(() => {
-    // Only load from storage if persistHistory is true at mount time
-    if (persistHistory && apiEndpoint) {
-      return loadMessages(apiEndpoint);
+    if (persistHistory && storageKey) {
+      return loadMessages(storageKey);
     }
     return [];
   });
@@ -72,20 +71,26 @@ export function useChat(
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
+  // Warmup ping — wakes Render (or any cold-start server) as soon as the hook mounts
+  useEffect(() => {
+    if (!apiEndpoint) return;
+    fetch(`${apiEndpoint}/health`, { method: "GET" }).catch(() => {});
+  }, [apiEndpoint]);
+
   // When persistHistory switches to false, immediately wipe stored history
   useEffect(() => {
-    if (!persistHistory && apiEndpoint) {
-      clearStorage(apiEndpoint);
+    if (!persistHistory && storageKey) {
+      clearStorage(storageKey);
     }
-  }, [persistHistory, apiEndpoint]);
+  }, [persistHistory, apiEndpoint, apiKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Save on every message change — only if persistHistory is true
   useEffect(() => {
-    if (!persistHistory || !apiEndpoint) return;
+    if (!persistHistory || !storageKey) return;
     // Don't save empty array — avoids wiping storage on initial render
     if (messages.length === 0) return;
-    saveMessages(apiEndpoint, messages);
-  }, [messages, apiEndpoint, persistHistory]);
+    saveMessages(storageKey, messages);
+  }, [messages, apiEndpoint, apiKey, persistHistory]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const sendMessage = useCallback(
     async (content: string) => {
@@ -266,8 +271,8 @@ export function useChat(
 
   const clearMessages = useCallback(() => {
     setMessages([]);
-    if (apiEndpoint) clearStorage(apiEndpoint);
-  }, [apiEndpoint]);
+    if (storageKey) clearStorage(storageKey);
+  }, [apiEndpoint, apiKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const stopGeneration = () => abortRef.current?.abort();
 

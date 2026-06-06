@@ -82,13 +82,6 @@ const props = [
     desc: "Show a 📎 upload button in the chat window for runtime document uploads",
   },
   {
-    name: "knowledgeBaseUrl",
-    type: "string",
-    required: false,
-    default: "—",
-    desc: "Public URL to a markdown/text file (e.g. raw GitHub URL). Server fetches and ingests it automatically on first use. Coming soon.",
-  },
-  {
     name: "collectionId",
     type: "string",
     required: false,

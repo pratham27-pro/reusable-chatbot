@@ -16,7 +16,7 @@ export function DocUploader({
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState<
-    "idle" | "success" | "error" | "timeout" | "invalid" | "toobig"
+    "idle" | "success" | "error" | "timeout" | "invalid" | "toobig" | "noendpoint"
   >("idle");
   const dark = theme === "dark";
 
@@ -46,7 +46,12 @@ export function DocUploader({
   };
 
   const handleUpload = async () => {
-    if (!file || !apiEndpoint) {
+    if (!apiEndpoint) {
+      setStatus("noendpoint");
+      setTimeout(() => setStatus("idle"), 4000);
+      return;
+    }
+    if (!file) {
       setStatus("error");
       return;
     }
@@ -88,6 +93,7 @@ export function DocUploader({
     timeout: { text: "⏱ Timed out — try again", color: "text-yellow-500" },
     invalid: { text: "✗ Only .txt files are supported", color: "text-red-400" },
     toobig: { text: "✗ File too large (max 2MB)", color: "text-red-400" },
+    noendpoint: { text: "✗ apiEndpoint required for uploads", color: "text-red-400" },
   };
 
   return (

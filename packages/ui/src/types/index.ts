@@ -11,8 +11,6 @@ export interface ChatBotProps {
   knowledgeBaseEnabled?: boolean;
   collectionId?: string;
   placeholder?: string;
-  width?: number;
-  height?: number;
   enableVoice?: boolean;
   persistHistory?: boolean;
 }
